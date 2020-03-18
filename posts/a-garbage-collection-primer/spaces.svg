@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 800 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(1,0,0,1.16667,-210,6.66667)">
+        <rect x="320" y="20" width="300" height="120" style="fill:rgb(235,235,235);stroke:black;stroke-width:3.68px;"/>
+        <g transform="matrix(1,0,0,0.857143,0,2.85714)">
+            <text x="428.067px" y="103.324px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:36px;">Heap</text>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,0,10)">
+        <rect x="20" y="20" width="80" height="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:4px;"/>
+        <text x="46.166px" y="34.441px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:12px;">S<tspan x="52.154px 56.221px " y="34.441px 34.441px ">ta</tspan>ck</text>
+    </g>
+    <g transform="matrix(1,0,0,1,0,40)">
+        <rect x="20" y="20" width="80" height="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:4px;"/>
+        <text x="46.166px" y="34.441px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:12px;">S<tspan x="52.154px 56.221px " y="34.441px 34.441px ">ta</tspan>ck</text>
+    </g>
+    <g transform="matrix(1,0,0,1,0,70)">
+        <rect x="20" y="20" width="80" height="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:4px;"/>
+        <text x="46.166px" y="34.441px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:12px;">S<tspan x="52.154px 56.221px " y="34.441px 34.441px ">ta</tspan>ck</text>
+    </g>
+    <g transform="matrix(1,0,0,1,0,100)">
+        <rect x="20" y="20" width="80" height="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:4px;"/>
+        <text x="46.166px" y="34.441px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:12px;">S<tspan x="52.154px 56.221px " y="34.441px 34.441px ">ta</tspan>ck</text>
+    </g>
+    <g transform="matrix(1,0,0,1,0,130)">
+        <rect x="20" y="20" width="80" height="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:4px;"/>
+        <text x="46.166px" y="34.441px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:12px;">S<tspan x="52.154px 56.221px " y="34.441px 34.441px ">ta</tspan>ck</text>
+    </g>
+    <g transform="matrix(0.433333,0,0,1.16667,281.333,6.66667)">
+        <rect x="320" y="20" width="300" height="120" style="fill:rgb(235,235,235);stroke:black;stroke-width:4.55px;"/>
+        <g transform="matrix(2.30769,0,0,0.857143,-418.462,2.85714)">
+            <text x="344.166px" y="79.324px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:36px;">Meta</text>
+            <text x="337.97px" y="127.324px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:36px;">Spa<tspan x="396.575px " y="127.324px ">c</tspan>e</text>
+        </g>
+    </g>
+    <g transform="matrix(0.3,0,0,1.16667,604,6.66667)">
+        <rect x="320" y="20" width="300" height="120" style="fill:rgb(235,235,235);stroke:black;stroke-width:4.7px;"/>
+        <g transform="matrix(3.33333,0,0,0.857143,-746.667,2.85714)">
+            <text x="337.657px" y="103.324px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:36px;">VM</text>
+        </g>
+    </g>
+    <g transform="matrix(0.433333,0,0,0.541667,421.333,94.1667)">
+        <rect x="320" y="20" width="300" height="120" style="fill:rgb(235,235,235);stroke:black;stroke-width:8.15px;"/>
+        <g transform="matrix(2.30769,0,0,1.84615,-418.462,-16.9231)">
+            <text x="333.883px" y="65.824px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:36px;">Native</text>
+        </g>
+    </g>
+    <g transform="matrix(0.433333,0,0,0.541667,421.333,19.1667)">
+        <rect x="320" y="20" width="300" height="120" style="fill:rgb(235,235,235);stroke:black;stroke-width:8.15px;"/>
+        <g transform="matrix(2.30769,0,0,1.84615,-418.462,-16.9231)">
+            <text x="343.296px" y="65.824px" style="font-family:'SegoeUI', 'Segoe UI', sans-serif;font-size:36px;">Code</text>
+        </g>
+    </g>
+</svg>

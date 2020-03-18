@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 203 165" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <circle cx="112.402" cy="143.675" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+    <circle cx="182.402" cy="103.675" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+    <path d="M138.275,133.21L129.902,133.675L134.554,126.698L133.158,131.815L138.275,133.21Z"/>
+    <path d="M165.037,113.598C165.037,113.598 141.867,126.838 133.158,131.815" style="fill:none;stroke:black;stroke-width:1px;"/>
+    <g>
+        <circle cx="32.402" cy="33.675" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+        <text x="27.97px" y="37.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">A</text>
+        <text x="9.402px" y="17.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">1</text>
+    </g>
+    <g>
+        <circle cx="97.902" cy="82.675" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+        <text x="93.687px" y="86.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">B</text>
+        <text x="74.902px" y="66.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">1</text>
+    </g>
+    <path d="M25.934,60.667L30.412,53.577L33.397,61.413L30.039,57.308L25.934,60.667Z"/>
+    <path d="M24.393,113.773C24.393,113.773 28.725,70.446 30.039,57.308" style="fill:none;stroke:black;stroke-width:1px;"/>
+    <path d="M100.615,110.3L102.528,102.136L107.911,108.566L103.396,105.785L100.615,110.3Z"/>
+    <path d="M107.648,123.675C107.648,123.675 104.856,111.928 103.396,105.785" style="fill:none;stroke:black;stroke-width:1px;"/>
+    <path d="M49.322,140.439L42.282,135.884L50.15,132.985L46.009,136.298L49.322,140.439Z"/>
+    <path d="M92.523,141.466C92.523,141.466 57.644,137.591 46.009,136.298" style="fill:none;stroke:black;stroke-width:1px;"/>
+    <path d="M35.445,109.394L29.044,114.811L28.551,106.44L30.521,111.364L35.445,109.394Z"/>
+    <path d="M132.824,27.758C83.5,40.403 49.508,68.381 30.521,111.364" style="fill:none;stroke:black;stroke-width:1px;"/>
+    <text x="108.069px" y="147.973px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">D</text>
+    <text x="178.737px" y="107.973px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">F</text>
+    <g>
+        <circle cx="22.402" cy="133.675" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+        <text x="18.354px" y="137.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">E</text>
+        <text x="-0.598px" y="117.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">2</text>
+    </g>
+    <g>
+        <circle cx="152.402" cy="23.675" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+        <text x="148.072px" y="27.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">C</text>
+        <text x="129.402px" y="7.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">0</text>
+    </g>
+    <g>
+        <circle cx="112.402" cy="143.675" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+        <text x="107.855px" y="147.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">D</text>
+        <text x="89.402px" y="127.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">1</text>
+    </g>
+    <g>
+        <circle cx="182.402" cy="103.675" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+        <text x="178.521px" y="107.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">F</text>
+        <text x="159.402px" y="87.875px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">0</text>
+    </g>
+</svg>

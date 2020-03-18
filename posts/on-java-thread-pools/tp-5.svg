@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 540 230" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g id="Artboard1" transform="matrix(1,0,0,1,-20,-80)">
+        <rect x="20" y="80" width="540" height="230" style="fill:none;"/>
+        <rect x="100" y="100" width="440" height="180" style="fill:rgb(235,235,235);stroke:rgb(166,166,166);stroke-width:1px;"/>
+        <g transform="matrix(1,0,0,1,60,10)">
+            <text x="170.663px" y="178.596px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">T<tspan x="176.663px 183.337px " y="178.596px 178.596px ">as</tspan>k</text>
+            <text x="178.998px" y="190.988px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">B</text>
+        </g>
+        <g id="Thread-1" transform="matrix(1,0,0,1,0,100)">
+            <g transform="matrix(1,-0,-0,1,20,-20)">
+            </g>
+        </g>
+        <g transform="matrix(1.25,0,0,1,-105,100)">
+            <rect x="420" y="120" width="80" height="40" style="fill:rgb(235,235,235);stroke:black;stroke-width:0.88px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,0,104)">
+            <text x="444.992px" y="137.164px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:12px;">Thread 1</text>
+            <text x="455.77px" y="151.426px" style="font-family:'Arial-ItalicMT', 'Arial', sans-serif;font-style:italic;font-size:8px;">Blocked</text>
+        </g>
+        <g id="Thread-11" serif:id="Thread-1" transform="matrix(1,0,0,1,0,50)">
+            <g transform="matrix(1.25,0,0,1,-105,0)">
+                <rect x="420" y="120" width="80" height="40" style="fill:rgb(235,235,235);stroke:black;stroke-width:0.88px;"/>
+            </g>
+            <g>
+                <text x="444.992px" y="137.164px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:12px;">Thread 2</text>
+                <text x="439.393px" y="151.426px" style="font-family:'Arial-ItalicMT', 'Arial', sans-serif;font-style:italic;font-size:8px;">Running (T<tspan x="478.232px 482.682px " y="151.426px 151.426px ">as</tspan>k <tspan x="492.607px 497.943px " y="151.426px 151.426px ">A)</tspan></text>
+            </g>
+        </g>
+        <g transform="matrix(0.714286,0,0,1,48.5714,0)">
+            <rect x="170" y="175" width="35" height="30" style="fill:rgb(235,235,235);stroke:black;stroke-width:1.15px;stroke-dasharray:5.75,5.75,0,0;"/>
+        </g>
+        <g transform="matrix(0.714286,0,0,1,78.5714,0)">
+            <rect x="170" y="175" width="35" height="30" style="fill:rgb(235,235,235);stroke:black;stroke-width:1.15px;stroke-dasharray:5.75,5.75,0,0;"/>
+        </g>
+        <g transform="matrix(0.714286,0,0,1,108.571,0)">
+            <rect x="170" y="175" width="35" height="30" style="fill:rgb(235,235,235);stroke:black;stroke-width:1.15px;stroke-dasharray:5.75,5.75,0,0;"/>
+        </g>
+        <g transform="matrix(0.714286,0,0,1,263.571,0)">
+            <rect x="170" y="175" width="35" height="30" style="fill:rgb(235,235,235);stroke:black;stroke-width:1.15px;stroke-dasharray:5.75,5.75,0,0;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,214,11.6)">
+            <text x="170.663px" y="178.596px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">T<tspan x="176.663px 183.337px " y="178.596px 178.596px ">as</tspan>k</text>
+            <text x="178.998px" y="190.988px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">A</text>
+        </g>
+        <g transform="matrix(1,0,0,1,5.68434e-14,10)">
+            <g>
+                <text x="170.663px" y="178.596px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">T<tspan x="176.663px 183.337px " y="178.596px 178.596px ">as</tspan>k</text>
+                <text x="178.667px" y="190.988px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">D</text>
+            </g>
+            <g transform="matrix(1,0,0,1,60,0)">
+                <text x="170.663px" y="178.596px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">T<tspan x="176.663px 183.337px " y="178.596px 178.596px ">as</tspan>k</text>
+                <text x="178.998px" y="190.988px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">B</text>
+            </g>
+            <ellipse cx="150" cy="180" rx="10" ry="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            <path d="M150,160L310,160" style="fill:none;stroke:black;stroke-width:1px;"/>
+            <path d="M310,160C315.519,160 320,168.962 320,180C320,191.038 315.519,200 310,200" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            <g transform="matrix(1,0,0,1,30,2.84217e-14)">
+                <text x="170.663px" y="178.596px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">T<tspan x="176.663px 183.337px " y="178.596px 178.596px ">as</tspan>k</text>
+                <text x="178.667px" y="190.988px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">C</text>
+            </g>
+            <path d="M150,200L310,200" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,10,10)">
+            <text x="100px" y="115.759px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:22px;">Thread Pool</text>
+        </g>
+        <g id="Thread-12" serif:id="Thread-1">
+            <g transform="matrix(1.25,0,0,1,-105,0)">
+                <rect x="420" y="120" width="80" height="40" style="fill:rgb(235,235,235);stroke:black;stroke-width:0.88px;"/>
+            </g>
+            <g>
+                <text x="444.992px" y="137.164px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:12px;">Thread 1</text>
+                <text x="455.77px" y="151.426px" style="font-family:'Arial-ItalicMT', 'Arial', sans-serif;font-style:italic;font-size:8px;">Blocked</text>
+            </g>
+        </g>
+        <g transform="matrix(1,-0,-0,1,20,80)">
+            <path d="M318.377,100.381L310,100L315.331,93.527L313.427,98.477L318.377,100.381Z"/>
+            <path d="M400,60C400,60 329.882,91.163 313.427,98.477" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1,0,0,-1,0,380)">
+            <g transform="matrix(1,0,0,-1,20,300)">
+                <path d="M315.331,126.473L310,120L318.377,119.619L313.427,121.523L315.331,126.473Z"/>
+                <path d="M400,160C400,160 329.882,128.837 313.427,121.523" style="fill:none;stroke:black;stroke-width:1px;"/>
+            </g>
+        </g>
+        <g transform="matrix(1,-0,-0,1,20,80)">
+            <path d="M317.5,113.75L310,110L317.5,106.25L313.75,110L317.5,113.75Z" style="fill:rgb(166,166,166);"/>
+            <path d="M400,110L313.75,110" style="fill:none;stroke:rgb(166,166,166);stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(0.912312,-0.409496,0.409496,0.912312,14.0654,176.438)">
+            <text x="331.664px" y="129.298px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">poll()</text>
+        </g>
+        <g transform="matrix(0.915033,0.40338,-0.40338,0.915033,114.774,-23.545)">
+            <text x="331.664px" y="129.298px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">poll()</text>
+        </g>
+        <g transform="matrix(0.47,0,0,1,79.5,0)">
+            <g transform="matrix(2.12766,-0,-0,1,-126.596,80)">
+                <path d="M122.5,106.25L130,110L122.5,113.75L126.25,110L122.5,106.25Z"/>
+                <path d="M83,110L126.25,110" style="fill:none;stroke:black;stroke-width:1px;"/>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,1.24345e-14,35)">
+            <text x="23.334px" y="159.298px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">submit(       )</text>
+        </g>
+        <g transform="matrix(0.714286,0,0,1,-55.4286,-2.84217e-14)">
+            <rect x="170" y="175" width="35" height="30" style="fill:none;stroke:black;stroke-width:1.15px;stroke-dasharray:5.75,5.75,0,0;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-104,10)">
+            <text x="170.663px" y="178.596px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">T<tspan x="176.663px 183.337px " y="178.596px 178.596px ">as</tspan>k</text>
+            <text x="178.667px" y="190.988px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">D</text>
+        </g>
+        <g transform="matrix(-1,0,0,1,605,80)">
+            <path d="M297,90C300.863,90 304,98.962 304,110C304,121.038 300.863,130 297,130" style="fill:none;stroke:black;stroke-width:1px;stroke-dasharray:4,3,0,0;"/>
+        </g>
+    </g>
+</svg>

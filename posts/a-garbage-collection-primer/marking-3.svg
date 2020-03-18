@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 332 221" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(1,0,0,1,-349.393,-119.393)">
+        <rect x="380" y="146" width="300" height="161" style="fill:url(#_Radial1);stroke:black;stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+        <g transform="matrix(1,0,0,1,320,30)">
+            <g transform="matrix(1,0,0,1,-60,-50)">
+                <circle cx="160" cy="240" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            </g>
+            <text x="95.567px" y="194.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">A</text>
+            <g transform="matrix(1,0,0,1,35,-95)">
+                <text x="42px" y="269.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">1</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,380,90)">
+            <g transform="matrix(1,0,0,1,-60,-50)">
+                <circle cx="160" cy="240" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            </g>
+            <text x="95.951px" y="194.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">E</text>
+            <g transform="matrix(1,0,0,1,35,-95)">
+                <text x="42px" y="269.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">0</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,380,-10)">
+            <g transform="matrix(1,0,0,1,-60,-50)">
+                <circle cx="160" cy="240" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            </g>
+            <text x="95.784px" y="194.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">B</text>
+            <g transform="matrix(1,0,0,1,35,-95)">
+                <text x="42px" y="269.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">1</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,460,12.5)">
+            <g transform="matrix(1,0,0,1,-60,-50)">
+                <circle cx="160" cy="240" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            </g>
+            <text x="95.31px" y="194.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">G</text>
+            <g transform="matrix(1,0,0,1,75,-95)">
+                <text x="42px" y="269.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">1</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,533,67.5)">
+            <g transform="matrix(1,0,0,1,-60,-50)">
+                <circle cx="160" cy="240" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            </g>
+            <text x="96.118px" y="194.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">F</text>
+            <g transform="matrix(1,0,0,1,75,-95)">
+                <text x="42px" y="269.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">1</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,460,83)">
+            <g transform="matrix(1,0,0,1,-60,-50)">
+                <circle cx="160" cy="240" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            </g>
+            <text x="95.453px" y="194.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">D</text>
+            <g transform="matrix(1,0,0,1,35,-95)">
+                <text x="42px" y="269.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">0</text>
+            </g>
+        </g>
+        <g transform="matrix(1,-0,-0,1,349.393,119.393)">
+            <path d="M105.786,72.647L114.107,71.607L109.946,78.887L110.986,73.687L105.786,72.647Z"/>
+            <path d="M87.607,89.273C87.607,89.273 103.98,78.358 110.986,73.687" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1,-0,-0,1,349.393,119.393)">
+            <path d="M182.808,152.275L190.607,155.357L183.462,159.746L186.871,155.683L182.808,152.275Z"/>
+            <path d="M150.607,158.857C150.607,158.857 176.934,156.553 186.871,155.683" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1,-0,-0,1,349.393,119.393)">
+            <path d="M263.873,118.544L267.607,126.052L259.36,124.534L264.612,123.795L263.873,118.544Z"/>
+            <path d="M226.607,95.161C226.607,95.161 255.163,116.677 264.612,123.795" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1,-0,-0,1,349.393,119.393)">
+            <path d="M182.699,82.816L190.607,85.607L183.63,90.258L186.886,86.072L182.699,82.816Z"/>
+            <path d="M90.607,98.107C90.607,98.107 168.762,88.337 186.886,86.072" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,545,5)">
+            <g transform="matrix(1,0,0,1,-60,-50)">
+                <circle cx="160" cy="240" r="20" style="fill:rgb(235,235,235);stroke:black;stroke-width:1px;"/>
+            </g>
+            <text x="95.31px" y="194.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">G</text>
+            <g transform="matrix(1,0,0,1,75,-95)">
+                <text x="42px" y="269.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">1</text>
+            </g>
+        </g>
+        <g transform="matrix(1,-0,-0,1,349.393,119.393)">
+            <path d="M43.107,96.857L50.607,100.607L43.107,104.357L46.857,100.607L43.107,96.857Z"/>
+            <path d="M10.607,100.607L46.857,100.607" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1,-0,-0,1,349.393,119.393)">
+            <path d="M150.72,41.468L143.107,44.982L144.864,36.782L145.449,42.053L150.72,41.468Z"/>
+            <path d="M170.607,10.607C170.607,10.607 152.098,33.743 145.449,42.053" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1.64516,0,0,1.64516,-407.097,-116.774)">
+            <g transform="matrix(0.607843,-0,-0,0.607843,459.827,143.553)">
+                <path d="M278.955,53.652L281.607,61.607L273.652,58.955L278.955,58.955L278.955,53.652Z"/>
+                <path d="M230.607,10.607C230.607,10.607 268.487,48.487 278.955,58.955" style="fill:none;stroke:black;stroke-width:1px;"/>
+            </g>
+        </g>
+        <g transform="matrix(1.21176,0,0,1.21176,-134.479,-58.7647)">
+            <g transform="matrix(0.825243,-0,-0,0.825243,399.313,147.024)">
+                <use xlink:href="#_Image2" x="302.001" y="158.107" width="9.364px" height="52px" transform="matrix(0.936396,0,0,1,0,0)"/>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,4,4)">
+            <text x="380px" y="155.588px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;">Heap</text>
+        </g>
+    </g>
+    <defs>
+        <radialGradient id="_Radial1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(310,198.812,-198.812,310,390,151.188)"><stop offset="0" style="stop-color:rgb(235,235,235);stop-opacity:1"/><stop offset="0.12" style="stop-color:rgb(218,218,218);stop-opacity:1"/><stop offset="0.26" style="stop-color:rgb(202,202,202);stop-opacity:1"/><stop offset="0.69" style="stop-color:rgb(196,196,196);stop-opacity:1"/><stop offset="1" style="stop-color:rgb(163,163,163);stop-opacity:1"/></radialGradient>
+        <image id="_Image2" width="10px" height="52px" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA0CAYAAACzQqlgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAACJ0lEQVRIieWSvc4pURSG380mRsyoGJ2/Sifcg0SrIlG5D4VCVC5BVBIXIJHodG5AKESIRMhMgkpkNusUX/ZkfpDzdSc5K5nCnmeetdZrs1arBc45GGNkmiaq1SrTdR3RaBREBFmBZrOJer2O6/WKyWSCUChEXggAAgAghKDZbIbH44FerwchhJuS4GKxwOVyQTgcxnq9xmg0ckFE9ANOp1Pk83koioJGo4HxeIzVauWyBkzTpM1mg263i1QqhXK5jH6/j+FwiPv9TnLWwHw+R6fTQSKRYKlUCqfTCYVCgbXbbSyXS9vIi8UicrkcAwBd13E+nwEAqqqyUqlktw9IiIggjbIYY8y1tSyn8W2O8lAavRAABJyHuq7DMAxf4HaOsiKRCNM0DaZp+o3eA+eczrFcoNzcCfqM8ktd1+2IXNfM+6U0fo3Ha/zVMjbobZFMJmEYBp7Pp/3ClyMAKIrCVFW1s/wYj7R65/QZgfeb+3L8tJAvnq+gt7xZEpE/HiJ6e4E/Gr1Z+uJ5vV4Ih8MsFovhfD7j+Xzi9XqBbTYbl61SqWC73QKAtDFFUX4szkcIAcuyUKvVaDAYkGVZEEKAe+cLBoMAgEwmg8PhAM7552UkuN/v7d9fwd1u93vQt4x8brcbcc7Jsix6ex9laZrGNE3D8Xj83trb/l8F0+n03xvtf+dTjkSE6/VKnHMSQtBXYzweZ6qq4ng8fm/tXOj/ArPZLKLRKP4AhIaPWh54a5UAAAAASUVORK5CYII="/>
+    </defs>
+</svg>
