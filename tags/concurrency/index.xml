@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Jorge Branch&#39;s Tech Blog</title>
-    <link>https://jorgedfbranco.github.io/</link>
-    <description>Recent content on Jorge Branch&#39;s Tech Blog</description>
+    <title>concurrency on Jorge Branch&#39;s Tech Blog</title>
+    <link>https://jorgedfbranco.github.io/tags/concurrency/</link>
+    <description>Recent content in concurrency on Jorge Branch&#39;s Tech Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 19 Mar 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://jorgedfbranco.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://jorgedfbranco.github.io/tags/concurrency/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -28,16 +28,6 @@
       <guid>https://jorgedfbranco.github.io/posts/implementing-a-promise-in-scala/</guid>
       <description>Introduction Frequently in concurrent programming, the problem of wanting to Frequently in concurrent programming, one may need to pass a placeholder object to another part of the application and be notified when The Scala libraries provide two related ways to deal with the computation of
 /*** A thread-safe container for a value that can be set by calls to `set()`* and retrieved by calls to `get()`. Any of those methods can be invoked* by any thread.</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://jorgedfbranco.github.io/about/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://jorgedfbranco.github.io/about/</guid>
-      <description>Software Engineer originally from Lisbon, currently living in Zürich.
- </description>
     </item>
     
   </channel>
