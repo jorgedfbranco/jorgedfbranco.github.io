@@ -98,11 +98,8 @@ pre {
     font-size: 1.5em;
 }
 
-.clickable {
-    transition: 0.5s;
-}
-
 .clickable:hover {
+    transition: 0.5s;
     opacity: 0.5;
     letter-spacing: 0.15px;
 }
