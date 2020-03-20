@@ -7,24 +7,38 @@
     </head>
     <body>
         <div id="main" class="nav-bar">
-            <a class="node" href="/">Jorge Branco's Tech Blog</a>
+            <a class="node clickable" href="/">Jorge Branco's Tech Blog</a>
             
-            <a class="node" href="https://jorgedfbranco.github.io/about/">About</a>
+            <a class="node clickable" href="https://jorgedfbranco.github.io/about/">About</a>
         </div>
 
 
-<p style="margin-top: 100px; margin-left: 25px;">Latest posts:</p>
-
+<div id="main-div">
     
-    <p style="margin-left: 25px;"><a href="https://jorgedfbranco.github.io/posts/implementing-a-promise-in-scala/">Implementing a Promise in Scala</a></p>
+        
+        <div>
+            <a href="https://jorgedfbranco.github.io/posts/implementing-a-promise-in-scala/"><h2 class="clickable">Implementing a Promise in Scala</h2></a>
+            <p style="text-align: right; margin-top: -70px;">March 17, 2020</p>
+            <p style="margin-left: 16px;">We describe promises in Scala and how they can be used. As a theoretical recap, we see how to use the <code>wait()</code> / <code>notify()</code> pattern with intrinsic locks, and how to implement the same algorithms on top of <code>ReentrantLock</code>s. With this, we have all the necessary artillery to do a simple promise implementation. This implementation will not be a drop-in replacement in Scala, we'll see why and compare it with Scala's <code>Promise[T]</code>.</p>
+            <div style="margin-left: 16px;">
+                
+                <span class="tag">#scala</span>
+                
+                <span class="tag">#jvm</span>
+                
+                <span class="tag">#algorithms</span>
+                
+                <span class="tag">#concurrency</span>
+                
+            </div>
+        </div>
+        
     
-
+        
     
-
+</div>
 
         </div>
-        <div id="footer" class="nav-bar">
-            <p style="text-align: center; padding: 16px; margin-bottom: 0px;">Jorge Branco, 2020</p>
-        </div>
+        
     </body>
 </html>

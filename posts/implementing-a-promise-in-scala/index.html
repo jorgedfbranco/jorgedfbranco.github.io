@@ -3,17 +3,16 @@
     <head>
         <title>Implementing a Promise in Scala - Jorge Branch&#39;s Tech Blog</title>
         <link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.css">
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
     </head>
     <body>
         <div id="main" class="nav-bar">
-            <a class="node" href="/">Jorge Branco's Tech Blog</a>
+            <a class="node clickable" href="/">Jorge Branco's Tech Blog</a>
             
-            <a class="node" href="https://jorgedfbranco.github.io/about/">About</a>
+            <a class="node clickable" href="https://jorgedfbranco.github.io/about/">About</a>
         </div>
 
         
-    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-    
     <div id="main-div">
         <h1 style="text-align: center; margin-block-start: 0; margin-block-end: 0;">Implementing a Promise in Scala</h1>
 
@@ -36,6 +35,11 @@
         
         <p style="text-align: center; margin-block-start: 0; margin-block-end: 0">March 17, 2020</p>
         
+
+        
+        <p class="roadmap"><i><b>Roadmap:</b> We describe promises in Scala and how they can be used. As a theoretical recap, we see how to use the <code>wait()</code> / <code>notify()</code> pattern with intrinsic locks, and how to implement the same algorithms on top of <code>ReentrantLock</code>s. With this, we have all the necessary artillery to do a simple promise implementation. This implementation will not be a drop-in replacement in Scala, we'll see why and compare it with Scala's <code>Promise[T]</code>.</i><p>
+        
+
         <h2 id="introduction">Introduction</h2>
 <p>Frequently in concurrent programming, the problem of wanting to 
 Frequently in concurrent programming, one may need to pass a placeholder object
@@ -166,22 +170,26 @@ override final def future: Future[T] = this
 <li><a href="https://en.wikipedia.org/wiki/Futures_and_promises">Wikipedia - Futures and promises</a></li>
 </ul>
 
+        <h2></h2>
     </div>
 
     
-    <div id="prev-next-page-section">
-        
-        
-        
-        <a href="/about/">About →</a>
+    <div style="display: block; text-align: center;">
+        <h2 style="border: 0px !important;">More Articles</h2>
+        <div>
+                
+        </div>
+        <div>
             
+            <a href="/about/"><h2 class="clickable" style="border: 0px !important;">About →</h2></a>
+            
+        </div>
     </div>
+    <br><br><br>
     
 
 
         </div>
-        <div id="footer" class="nav-bar">
-            <p style="text-align: center; padding: 16px; margin-bottom: 0px;">Jorge Branco, 2020</p>
-        </div>
+        
     </body>
 </html>
