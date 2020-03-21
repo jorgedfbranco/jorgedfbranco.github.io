@@ -1,34 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>jvm on Jorge Branch&#39;s Tech Blog</title>
-    <link>https://jorgedfbranco.github.io/tags/jvm/</link>
-    <description>Recent content in jvm on Jorge Branch&#39;s Tech Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 19 Mar 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://jorgedfbranco.github.io/tags/jvm/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>A ThreadPoolExecutor Deep-Dive</title>
-      <link>https://jorgedfbranco.github.io/posts/a-threadpoolexecutor-deep-dive/</link>
-      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://jorgedfbranco.github.io/posts/a-threadpoolexecutor-deep-dive/</guid>
-      <description>Introduction Java has been designed from its inception with multi-threading in mind. Unfortunately, and although all the needed concurrency primitives were from the very beginning made available to developers, development could quickly get unwildy: a lot of boilerplate code had to be recreated time and time again across applications, and that was quite often not even the biggest hurdle &amp;ndash; it&amp;rsquo;s no secret that getting concurrent algorithms right is hard.</description>
-    </item>
-    
-    <item>
-      <title>Implementing a Promise in Scala</title>
-      <link>https://jorgedfbranco.github.io/posts/implementing-a-promise-in-scala/</link>
-      <pubDate>Tue, 17 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://jorgedfbranco.github.io/posts/implementing-a-promise-in-scala/</guid>
-      <description>Introduction Frequently in concurrent programming, the problem of wanting to Frequently in concurrent programming, one may need to pass a placeholder object to another part of the application and be notified when The Scala libraries provide two related ways to deal with the computation of
-/*** A thread-safe container for a value that can be set by calls to `set()`* and retrieved by calls to `get()`. Any of those methods can be invoked* by any thread.</description>
-    </item>
-    
-  </channel>
-</rss>
