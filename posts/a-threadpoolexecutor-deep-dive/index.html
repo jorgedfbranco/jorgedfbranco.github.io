@@ -121,8 +121,12 @@ while (!this.isTerminated) {
   val task = this.tasks.poll() // blocking call
   task.run()
 }
+
 </pre>
 <div style="padding: 30px; border-left: 10px solid rgba(255, 0, 0, 0.75); background: rgba(255, 0, 0, 0.1);">
+<p><strong>From a performance perspective, this implies synchronization costs both when submitting the task to the blocking queue and  when polling out of it.</strong> As long as each task contains quite some work to do, that overhead may be safely ignored, but <strong>one should be careful to not overflow the thread-pool with zillions of small tasks, as the blocking queue may then turn into a bottleneck.</strong></p></div>
+<p>x</p>
+<div style="padding: 30px; border-left: 10px; background: rgba(255, 0, 0, 0.1);">
 <p><strong>From a performance perspective, this implies synchronization costs both when submitting the task to the blocking queue and  when polling out of it.</strong> As long as each task contains quite some work to do, that overhead may be safely ignored, but <strong>one should be careful to not overflow the thread-pool with zillions of small tasks, as the blocking queue may then turn into a bottleneck.</strong></p></div>
 <p>x</p>
 <div style="margin-left: -1000px; padding-left: 1000px; margin-right: -1500px; padding-right: 1500px; padding-top: 30px; padding-bottom: 30px; background: rgba(255, 0, 0, 0.1);">
