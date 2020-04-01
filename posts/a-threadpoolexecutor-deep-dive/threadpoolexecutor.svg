@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1024 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(1.18421,0,0,1.42875,-89.4737,-300.05)">
+        <rect x="160" y="280" width="380" height="200" style="fill:rgb(255,85,85);stroke:black;stroke-width:2.25px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-51,-50)">
+        <text x="160px" y="168.4px" style="font-family:'CMUConcrete-Bold', 'CMU Concrete';font-weight:700;font-size:12px;">ThreadP<tspan x="212.143px 219.426px " y="168.4px 168.4px ">oo</tspan>lExecutor</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-28.7877,-60)">
+        <ellipse cx="355.515" cy="215" rx="24.485" ry="25" style="fill:rgb(213,0,0);stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-5,-4.3)">
+        <g transform="matrix(1,0,0,1,-25.5151,-156.5)">
+            <ellipse cx="355.515" cy="215" rx="24.485" ry="25" style="fill:rgb(213,0,0);stroke:black;stroke-width:3px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-20,-185.7)">
+            <text x="329.817px" y="249.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">T<tspan x="337.482px " y="249.2px ">a</tspan>sk 99</text>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,-28.7877,-40)">
+        <ellipse cx="355.515" cy="215" rx="24.485" ry="25" style="fill:rgb(213,0,0);stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-28.7877,-20)">
+        <ellipse cx="355.515" cy="215" rx="24.485" ry="25" style="fill:rgb(213,0,0);stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-23.2726,-50)">
+        <text x="332.817px" y="249.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">T<tspan x="340.482px " y="249.2px ">a</tspan>sk 2</text>
+    </g>
+    <g transform="matrix(-1,0,0,1,617.758,-30)">
+        <path d="M410,320C410,320 411.576,320.788 413.844,321.922C416.903,323.452 418.836,326.579 418.836,330C418.836,333.421 416.903,336.548 413.844,338.078C411.197,339.402 408.457,340.772 405.818,342.091C402.823,343.589 400.93,346.651 400.93,350C400.93,353.349 402.823,356.411 405.818,357.909C408.521,359.261 411.331,360.665 414.037,362.018C417.06,363.53 418.97,366.62 418.97,370C418.97,373.38 417.06,376.47 414.037,377.982C411.403,379.298 408.672,380.664 406.037,381.982C403,383.5 401.081,386.604 401.081,390C401.081,393.396 403,396.5 406.037,398.018C408.6,399.3 411.253,400.626 413.818,401.909C416.883,403.442 418.819,406.574 418.819,410C418.819,413.426 416.883,416.558 413.818,418.091C411.266,419.367 408.627,420.687 406.077,421.962C403.032,423.484 401.109,426.596 401.109,430C401.109,433.404 403.032,436.516 406.077,438.038C408.387,439.193 410,440 410,440" style="fill:none;stroke:rgb(255,170,170);stroke-width:5px;"/>
+    </g>
+    <g transform="matrix(-1,0,0,1,697.758,-30)">
+        <path d="M410,320C410,320 411.576,320.788 413.844,321.922C416.903,323.452 418.836,326.579 418.836,330C418.836,333.421 416.903,336.548 413.844,338.078C411.197,339.402 408.457,340.772 405.818,342.091C402.823,343.589 400.93,346.651 400.93,350C400.93,353.349 402.823,356.411 405.818,357.909C408.521,359.261 411.331,360.665 414.037,362.018C417.06,363.53 418.97,366.62 418.97,370C418.97,373.38 417.06,376.47 414.037,377.982C411.403,379.298 408.672,380.664 406.037,381.982C403,383.5 401.081,386.604 401.081,390C401.081,393.396 403,396.5 406.037,398.018C408.6,399.3 411.253,400.626 413.818,401.909C416.883,403.442 418.819,406.574 418.819,410C418.819,413.426 416.883,416.558 413.818,418.091C411.266,419.367 408.627,420.687 406.077,421.962C403.032,423.484 401.109,426.596 401.109,430C401.109,433.404 403.032,436.516 406.077,438.038C408.387,439.193 410,440 410,440" style="fill:none;stroke:rgb(255,170,170);stroke-width:5px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-42.2425,-30)">
+        <path d="M410,320C410,320 411.576,320.788 413.844,321.922C416.903,323.452 418.836,326.579 418.836,330C418.836,333.421 416.903,336.548 413.844,338.078C411.197,339.402 408.457,340.772 405.818,342.091C402.823,343.589 400.93,346.651 400.93,350C400.93,353.349 402.823,356.411 405.818,357.909C408.521,359.261 411.331,360.665 414.037,362.018C417.06,363.53 418.97,366.62 418.97,370C418.97,373.38 417.06,376.47 414.037,377.982C411.403,379.298 408.672,380.664 406.037,381.982C403,383.5 401.081,386.604 401.081,390C401.081,393.396 403,396.5 406.037,398.018C408.6,399.3 411.253,400.626 413.818,401.909C416.883,403.442 418.819,406.574 418.819,410C418.819,413.426 416.883,416.558 413.818,418.091C411.266,419.367 408.627,420.687 406.077,421.962C403.032,423.484 401.109,426.596 401.109,430C401.109,433.404 403.032,436.516 406.077,438.038C408.387,439.193 410,440 410,440" style="fill:none;stroke:rgb(255,170,170);stroke-width:5px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,37.7575,-30)">
+        <path d="M410,320C410,320 411.576,320.788 413.844,321.922C416.903,323.452 418.836,326.579 418.836,330C418.836,333.421 416.903,336.548 413.844,338.078C411.197,339.402 408.457,340.772 405.818,342.091C402.823,343.589 400.93,346.651 400.93,350C400.93,353.349 402.823,356.411 405.818,357.909C408.521,359.261 411.331,360.665 414.037,362.018C417.06,363.53 418.97,366.62 418.97,370C418.97,373.38 417.06,376.47 414.037,377.982C411.403,379.298 408.672,380.664 406.037,381.982C403,383.5 401.081,386.604 401.081,390C401.081,393.396 403,396.5 406.037,398.018C408.6,399.3 411.253,400.626 413.818,401.909C416.883,403.442 418.819,406.574 418.819,410C418.819,413.426 416.883,416.558 413.818,418.091C411.266,419.367 408.627,420.687 406.077,421.962C403.032,423.484 401.109,426.596 401.109,430C401.109,433.404 403.032,436.516 406.077,438.038C408.387,439.193 410,440 410,440" style="fill:none;stroke:rgb(255,170,170);stroke-width:5px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-23.2726,-50)">
+        <g transform="matrix(1,-0,-0,1,23.2726,50)">
+            <path d="M299.172,212.032L307.38,210.317L303.827,217.912L304.44,212.644L299.172,212.032Z" style="fill:rgb(140,140,140);"/>
+            <path d="M206.727,290C206.727,290 287.854,225.775 304.44,212.644" style="fill:none;stroke:rgb(140,140,140);stroke-width:1px;"/>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,-23.2726,-50)">
+        <g transform="matrix(1,-0,-0,1,23.2726,50)">
+            <path d="M349.721,217.815L346.137,210.235L354.352,211.916L349.086,212.55L349.721,217.815Z"/>
+            <path d="M447.758,290C447.758,290 365.789,225.661 349.086,212.55" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,-23.2726,-50)">
+        <g transform="matrix(1,-0,-0,1,23.2726,50)">
+            <path d="M335.854,226.338L336.399,217.971L342.766,223.428L337.854,221.427L335.854,226.338Z"/>
+            <path d="M366.727,290C366.727,290 343.901,235.788 337.854,221.427" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,-23.2726,-50)">
+        <g transform="matrix(1,-0,-0,1,23.2726,50)">
+            <path d="M310.951,223.578L317.267,218.063L317.89,226.425L315.844,221.532L310.951,223.578Z"/>
+            <path d="M287.758,290C287.758,290 309.949,235.901 315.844,221.532" style="fill:none;stroke:black;stroke-width:1px;"/>
+        </g>
+    </g>
+    <g transform="matrix(2e-06,0,0,0.444444,325,44.4444)">
+        <g transform="matrix(1e+20,-0,-0,2.25,-3.25e+22,-100)">
+            <path d="M332.5,105L325,120L317.5,105L325,112.5L332.5,105Z"/>
+            <path d="M325,80L325,112.5" style="fill:none;stroke:black;stroke-width:2px;"/>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,176.727,-50)">
+        <text x="230.413px" y="294.259px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">p<tspan x="237.474px " y="294.259px ">o</tspan>ll()</text>
+    </g>
+    <g transform="matrix(1,0,0,1,136.727,-20)">
+        <text x="230.413px" y="294.259px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">p<tspan x="237.474px " y="294.259px ">o</tspan>ll()</text>
+    </g>
+    <g transform="matrix(1,0,0,1,31.7274,-20.1174)">
+        <text x="230.413px" y="294.259px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">p<tspan x="237.474px " y="294.259px ">o</tspan>ll()</text>
+    </g>
+    <g transform="matrix(1,0,0,1,20,13)">
+        <text x="170.998px" y="412.4px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">Thread</text>
+    </g>
+    <g transform="matrix(1,0,0,1,95.7849,13)">
+        <text x="170.998px" y="412.4px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">Thread</text>
+    </g>
+    <g transform="matrix(1,0,0,1,180,13)">
+        <text x="170.998px" y="412.4px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">Thread</text>
+    </g>
+    <g transform="matrix(1,0,0,1,260,13)">
+        <text x="170.998px" y="412.4px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">Thread</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-22.2425,-50)">
+        <g transform="matrix(1,0,0,1,-125.515,184.543)">
+            <ellipse cx="355.515" cy="215" rx="24.485" ry="25" style="fill:rgb(255,0,0);stroke:black;stroke-width:1px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-120,155.457)">
+            <text x="332.817px" y="249.2px" style="font-family:'CMUConcrete-Roman', 'CMU Concrete';font-weight:500;font-size:12px;fill:white;">T<tspan x="340.482px " y="249.2px ">a</tspan>sk 1</text>
+        </g>
+    </g>
+</svg>
