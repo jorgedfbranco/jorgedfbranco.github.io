@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>The Shenandoah Garbage Collector - An Introduction - Jorge Branch&#39;s Tech Blog</title>
+        <link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.css">
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    </head>
+    <body>
+        <div id="main" class="nav-bar">
+            <a class="node clickable" href="/">Jorge Branco's Tech Blog</a>
+            
+            <a class="node clickable" href="https://jorgedfbranco.github.io/about/">About</a>
+        </div>
+
+        
+    <div style="margin-top: 164px;" id="main-div">
+        <h1 style="text-align: center; margin-block-start: 0; margin-block-end: 0;">The Shenandoah Garbage Collector - An Introduction</h1>
+
+        <div style="display: flex; justify-content: space-evenly;">
+        
+        </div>
+
+        
+        <p style="text-align: center; margin-block-start: 0; margin-block-end: 0">October 6, 2020</p>
+        
+
+        
+        <p class="roadmap"><i><b>Roadmap:</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor rhoncus pellentesque. Etiam vulputate luctus nunc, quis cursus ante consectetur sed. Nam ut ornare augue. Donec posuere mattis nunc, ut maximus magna lobortis id. Maecenas eget leo dui. Cras finibus efficitur sapien quis aliquam. Fusce ac lacus sit amet nulla egestas maximus. Maecenas laoreet hendrerit viverra. Pellentesque maximus purus lectus, ac varius lectus euismod a. Quisque dapibus magna tortor, ac interdum est consequat ut. Praesent luctus ante et augue volutpat, in laoreet massa cursus.</i><p>
+        
+
+        <img src="intro-grey.jpg" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
+<h2 id="introduction">Introduction</h2>
+<p>Most modern languages, such as Java, C#, Python, Ruby, Go or JavaScript don&rsquo;t require direct developer intervention in the management of memory. For the creation of a new <code>Point</code> object, a call to <code>new Point()</code> is enough, and all the particular details of how the respective memory is going to be allocated and eventually deallocated are left to the virtual machine&rsquo;s garbage collector. Barring Rust and Objective-C, the trend over the last decades is evident: all new languages are garbage collected. We herein define a <strong>garbage collection</strong> as the process of finding and reclaiming memory known to correspond to objects that are proven to never be used again. Garbage collection per se is just a part of an overall overarching problem &ndash; automatic memory management. As a general rule, the garbage collector will need cooperation from the compiler and runtime system to effectively manage the application&rsquo;s memory.</p>
+<h3 id="heap-stacks-metaspace-native-and-code-regions">Heap, Stacks, Metaspace, Native and Code Regions</h3>
+<img src="spaces.png" class="centered-pic" style="width: 75%;">
+<p>The developer can directly use two different regions of memory: the <strong>stack</strong> and the <strong>heap</strong> (and technically also the native memory area, but that won&rsquo;t be covered here). Each application thread has an associated stack where local variables, method arguments, return values and return addresses are stored. A stack&rsquo;s capacity is in general very tight (OpenJDK&rsquo;s default is of 1 MB for a 64bit process) and stack overflows are the result if an attempt is made to use them beyond that threshold. Stacks are quite inflexible and don&rsquo;t allow for arbitrary allocation of memory. For that we have the heap, consisting of one or more conceptualluy contiguous regions of memory where objects can be allocated at will. Unlike stacks, heaps tend to be large in size, often having capacities in the order of tens of gigas of memory.</p>
+<h4 id="application-memory-footprint">Application Memory Footprint</h4>
+<p>It&rsquo;s important to note that the sum of all the running thread&rsquo;s stack sizes plus heap maximum capacity is not going to correspond to the application&rsquo;s true memory footprint, as these are not the only process' memory areas. Extra memory areas may contain virtual machine (and garbage collector) data-structures. May contain metadata about class and method definitions. Code on its various forms (bytecode, interpreted or compiled) will also reside in memory. Modern virtual machines will also allow you to use native interfaces that allow you to allocate and manage native memory.</p>
+<h4 id="object-layout">Object Layout</h4>
+<p><img src="object-layout.png" class="centered-pic" style="float: right; overflow: auto; margin-left: 20px;" ></p>
+<p>Other than by eventual virtual machine optimizations, in a JVM application any object allocated with the <code>new</code> operator is going to end up allocated in the heap. Knowing for sure how much effective space is being used by a given object is not a simple endeavor. Each object instance will need to have enough space to support all of its fields. It&rsquo;s customary to prefix each heap object with a 2-word long header containing:</p>
+<ul>
+<li>Class type (known in HotSpot&rsquo;s code as <a href="https://github.com/openjdk/jdk/blob/master/src/hotspot/share/oops/oop.hpp#L56">&ldquo;klass word&rdquo;</a>);</li>
+<li>GC, lock and hashcode related data (the <a href="https://github.com/openjdk/jdk/blob/master/src/hotspot/share/oops/oop.hpp#L58">&ldquo;mark word&rdquo;</a>).</li>
+</ul>
+<p>On top of that, given padding / alignment constraints, extra space may be kept from being used, so in fact adding to the object&rsquo;s size.</p>
+<h2 id="garbage-collection-taxonomy">Garbage Collection Taxonomy</h2>
+<p>Garbage collectors have existed at least since the early 1960&rsquo;s, when the first LISP garbage collector was developed by John McCarthy [JMC]. And as with so many other young fields, it took some time for the garbage collection community to converge on a set of widely used definitions &ndash; I&rsquo;ll be using the same vocabulary and definitions as seen in the <em>Garbage Collection Handbook</em> [GCH].</p>
+<p>Garbage collection algorithms broadly fall into two main categories. They either free unused memory by <strong>reference counting</strong> or by <strong>tracing</strong>.</p>
+<h3 id="reference-counting-collectors">Reference Counting Collectors</h3>
+<figure style="float: left; margin-top: 0px; margin-right: 16px; margin-bottom: 0px; margin-left: 0px;">
+    <img src="reference-counting.svg" width="300px" />
+    <p style="font-size: 0.75em; text-align-last: center; width: 300px;">
+        <strong>Reference Counting:</strong> All objects in the heap have an associated counter on how many other objects currently hold a reference to it.
+    </span>
+</figure>
+<p>A reference counting collector will keep track, for each object in memory, of the number of inward references from other objects. As new references are made to point to an object, its counter increases, and as those references are removed (by making the source field now point either to another object or to <code>null</code>), the counter decreases. When the counter falls to zero, the object is considered to be unreachable from application code and hence as a target for memory reclamation.</p>
+<p>Reference counting exhibits some nice qualities:</p>
+<ul>
+<li><strong>It has low memory overhead.</strong> Objects just need to have a counter that for most cases doesn&rsquo;t even need to have that many bits. That can be most likely accomodated by the commonly seen 2-3 words object headers. Unlike tracing algorithms like the copy collector, no extra memory is needed to be had on the side, just as an operational cost;</li>
+<li><strong>Deallocation can happen right at the moment the object is deemed unreachable.</strong> This contrasts drastically with tracing algorithms that have to wait for a mark phase for the identification of objects no longer alive. This could mean that, at least apparently, no long pauses are required by the garbage collector, unlike most tracing algorithms. We will see that this ends up not being the case;</li>
+<li><strong>It&rsquo;s a non-moving collector</strong>. Objects are not moved in memory. This allows reference counting to be used not only in type-safe languages, but also in languages like C and Rust. In fact, manual versions of reference counting are quite common in unsafe languages. See <strong>conservative collector</strong>.</li>
+</ul>
+<p>But also has very substancial drawbacks:</p>
+<ul>
+<li>
+<p><strong>The algorithm is unable to process cyclical references</strong>. Consider the case where an object <code>A</code> points to an object <code>B</code> and vice-versa. Let&rsquo;s also consider that object <code>A</code> is being referenced by some other reachable object <code>X</code> in the heap. That would translate into <code>refCount(A) = 2</code> and <code>refCount(B) = 1</code>. One would expect that the moment that <code>X</code> drops the reference to <code>A</code>, both <code>A</code> and <code>B</code> could be reclaimed, but in fact that will only decrease <code>refCount(A)</code> from 2 to 1. <code>A</code> and <code>B</code> will never be reclaimed! In practice, for the virtual machine to behave correctly even in the presence of cyclic references, a fallback tracing GC needs to be run from time to time;</p>
+</li>
+<li>
+<p><strong>Counters may at times overflow.</strong> When this happens, and depending on the algorithm implementation, objects can be kept in memory forever. The usual solution is to resort to a fallback tracing collector, a system that would anyway have to be in place to deal with cyclic references;</p>
+</li>
+<li>
+<p><strong>Even read-only operations can entail a huge amount of heap mutations.</strong> Consider the case where one iterates over an arbitrary array, with the sole intent of reading its contents. As we move our pointer marking the current element through the array, at each step at index <code>A[i]</code> we&rsquo;ll need to decrease the count of element <code>A[i]</code> as well as increasing the count of <code>A[i]</code>. This high level of heap mutations even in read-only operations can be quite troublesome in a highly concurrent setting, as a great deal of modern applications are;</p>
+</li>
+<li>
+<p><strong>Pause times can be quite unpredictable.</strong> Although at first glance it may look like no long pauses can happen with reference counting, in practice they can still happen, and often very unpredictably. Consider the case of a million node single-linked list with no external object pointing to any of its nodes, other than object <code>X</code> having a single reference to the list&rsquo;s head node. The moment this reference is cut off, the immediate effect will be of setting <code>refCount(head) = 0</code>. But before the marking of the node&rsquo;s memory as ready for collection, all the node&rsquo;s fields need to be scanned and any found references further processed. The next node in the chain will also see its <code>refCount(node)</code> turn to zero, generating a cascade effect all throughout the list, one million times.</p>
+</li>
+</ul>
+<h3 id="tracing-collectors">Tracing Collectors</h3>
+<p>Tracing collectors take a completely different approach to garbage collection. They divide the collection stage in two phases &ndash; a <strong>marking phase</strong>, where all reachable objects are identified and marked as such, followed by a phase tasked with the reclamation of available memory proper. As it turns out, there are only so many ways you can gargabe collect with tracing. The three possible tracing garbage collection variants are: <strong>Copying collection</strong>, <strong>Compacting collection</strong> and <strong>Sweeping collection</strong>. All the buzzwordy new GCs you have heard about will in way or another be a variant or combination of these three.</p>
+<h4 id="the-marking-phase">The Marking Phase</h4>
+<figure style="float: right; margin-top: -28px; margin-left: 0px; margin-bottom: 0px; margin-right: 0px;">
+    <img src="marking-3.svg" width="400px" />
+    <p style="font-size: small; text-align-last: center; width: 370px; margin-top: -24px; margin-left: 32px;">
+        <strong>Marking:</strong> All objects in the heap have a mark-bit. At the beginning of the marking phase, all mark-bits are set to 0. After the marking process is finished, all reachable objects have a mark-bit of 1 and all other objects can be safely collected, as they are known to have no incoming references. Notice how the process is kick-started by references from outside the heap (GC-roots). Those include application stacks and static fields.
+    </span>
+</figure>
+<p>All tracing collectors have as a first phase the identification and marking of all live objects. Marking (tracing) starts by adding to the <strong>mark-stack</strong> all <strong>GC roots</strong>, that is, all static fields or any kind of pointer emanating from application stacks (this includes local variables and method arguments). The mark-stack is then processed until empty: each object popped from the stack will get marked as alive and any references found in its fields that&rsquo;s still not marked as alive will be pushed into the stack. By the time the stack is empty we know that any object not marked must be unreachable, and hence, a target for collection.</p>
+<p>We&rsquo;ll now go over the different kinds of tracing collectors, and see how their subsequent phases work.</p>
+<h4 id="mark--copy-collector">Mark / Copy Collector</h4>
+<p>Mark / Compact collectors divide the heap into two areas, called <strong>from</strong> and <strong>to</strong>. Objects are always allocated in the <em>from</em> area. When the <em>from</em> area is full, a marking phase is kicked off. Subsequently, all the alive objects in the <em>from</em> area are copied into the <em>to</em> area. The final step is to flip the <em>to</em> and <em>from</em> areas: the <em>to</em> area is now the <em>from</em> area and vice-versa. The garbage collection process is by then over.</p>
+<p>The copy collector always requires heap sizes to be twice as large than the real application needs, as objects can only be allocated in one of the halves at a time. On the other hand, the algorithm will only mark and copy live objects &ndash; the work to be performed is proportional to the live-set size and not to the heap size, which works well with workloads with huge mortality rates. Also, after copying all the objects will be nicely packed (compacted) next to each other, which is good both for cache-friendiness and for fragmentation.</p>
+<h4 id="mark--compacting-collector">Mark / Compacting Collector</h4>
+<p>A Mark / Compact collector will, after the marking phase, compact all objects into one of the ends of the heap. There are multiple techniques to do so. A good compactor should make sure to &ldquo;slide&rdquo; the objects without changing their order, as that tends to yield the best results in terms of cache-friendliness.</p>
+<p>The drawbacks of compaction are highly dependent on the actual algorithm used. Most of the approaches require multiple passes (Java&rsquo;s Concurrent Mark &amp; Sweep fallback compactor needs 4 passes, for instance. Shenandoah [SHE] works similarly [SHEC]), may involve the reversal of pointer directions or even the existence of an external forwarding pointer in the header of all objects (the LISP2 approach [LISP2]).</p>
+<h4 id="mark--sweeping-collector">Mark &amp; Sweeping Collector</h4>
+<p>A Mark &amp; Sweep collector will after the marking phase, run over all</p>
+<p>This is most likely the best known tracing collector. It&rsquo;s also the only one that doesn&rsquo;t compact objects.</p>
+<h2 id="garbage-collector-properties">Garbage Collector Properties</h2>
+<h3 id="mutator-threads-vs-collector-threads">Mutator Threads vs Collector Threads</h3>
+<p>Applications running in modern CPUs and operating systems support one or more running threads. Threads can come in two types:</p>
+<ul>
+<li><strong>Collector Threads</strong>, threads that don&rsquo;t run any kind of application code and are thus only used for garbage collection. These threads don&rsquo;t necessarily run at all times, and will only kick in when requested by the virtual machine;</li>
+<li><strong>Application Threads</strong>, frequently also referred to as <strong>mutator threads</strong>. These are the threads created and directly or indirectly managed by the developer of the application, as they&rsquo;re tasked with running the (business) application code. They are considered to be mutators, as from a garbage collection perspective, they actively mutate the object graph in the heap.</li>
+</ul>
+<h3 id="concurrent-collectors">Concurrent Collectors</h3>
+<p>A garbage collector is said to be <em>concurrent</em> if collector threads run, even if only for some stages, simultaneously with application code.</p>
+<p>If a garbage collector is non-concurrent, garbage collection events force the pause of all application threads for the full duration of the collection. The stopping of all application threads to perform virtual machine house-keeping is called entering a <strong>safepoint</strong>. In the context of garbage collection, the expression <strong>Stop The World (STW)</strong> is also commonplace.</p>
+<p>As most garbage collectors execution time is proportional to the heap size or at least to the live-set size, as heaps grow larger and larger by the year, STW events are getting more and more pronounced. If we&rsquo;re to assume that a 500 MB heap can be processed in half a second, then a 16 GB heap will then take some 8 seconds to be processed. If the application is frozen throughout the whole process it will be undoubtly noticed by the user (if it&rsquo;s a UI we&rsquo;re dealing with) or by external applications (that may be assuming requests to be returned promptly, or heartbeats to be regularly sent at the very same short time intervals).</p>
+<h3 id="parallel-collectors">Parallel Collectors</h3>
+<p>A garbage collector is said to be <em>parallel</em> if there is at any time more than one collector thread running. A collector that is able to execute the mark phase of a mark &amp; sweep collection with multiple threads is an example of a parallel collector. Beware that this property is orthogonal to whether or not there are mutator threads currently running or not. A collector may be parallel during a stop the world event, or may be fully concurrent with mutator threads but run with a single collector thread (so, not parallel).</p>
+<h3 id="compacting-collectors">Compacting Collectors</h3>
+<p>A nice property of a garbage collector is in its ability to compact memory as it goes. The reasons are twofold:</p>
+<ul>
+<li><strong>Objects tightly stacked together tend to play nicer with CPU caches.</strong> The more spread they are throughout the heap, the more caches misses will be incurred by the application when attempting to access them. In modern architectures the CPU processing speed is so much faster than memory access latencies that up to there levels of cache sit between the CPU and main memory to attempt to minimize those roundtrips as much as possible. Thus, having an application displaying cache friendlyness is of vital importance.</li>
+<li><strong>Less (external) fragmentation.</strong> An application that never compacts its objects will tend to form &ldquo;holes&rdquo; in the heap. The more and smaller those &ldquo;holes&rdquo; are, the harder it will become to allocate new objects in memory &ndash; the application will take more and more time and processing power trying to find a &ldquo;hole&rdquo; large enough to fit the allocation request. This can be particularly problematic when the application attempts to allocate large objects. It can be quite puzzling at times to see that the application seems to be running out of memory although plenty of heap still seems to be available. Reference-counters and Mark &amp; Sweep collectors are non-compacting collectors and they are known to suffer from fragmentation issues. In commercial-grade VMs, the situation tends to be ameliorated by having a compacting collector run as a last resort before throwing out an <em>OutOfMemoryError</em>.</li>
+</ul>
+<h3 id="regionalized-collectors">Regionalized Collectors</h3>
+<p>Regionalized collectors divide the heap into multiple, equally sized memory regions. An example would be the G1 GC [G1GC], where the heap is divided in 2048 regions, with each region not being larger than 2MB. Other GCs may consider smaller regions, instead.  The Compressor GC [COMP], for instance, has its region be the size of an operating system page.</p>
+<p>Beware that generational collectors may also divide the heap in multiple memory areas, but that&rsquo;s not what one usually means by a <em>regionalized GC</em>.</p>
+<h3 id="generational-collectors">Generational Collectors</h3>
+<p>It didn&rsquo;t take too long for two ideas being noticed:</p>
+<ul>
+<li><strong>Most objects die young.</strong> It&rsquo;s quite common in server applications to see survival rates of recently allocated objects in the order of 3-5%;</li>
+<li><strong>When objects do age, they tend to stay alive in memory for long periods.</strong></li>
+</ul>
+<p>Given these two observations, it turns out that running a full garbage collection over the whole heap every time new memory needs to be reclaimed may be inefficient.</p>
+<p>TODO: talk about the strong and weak generation hypothesis</p>
+<h3 id="incremental-collectors">Incremental Collectors</h3>
+<p>At times it may happen that all the collecting work is performed by collector threads. At other times, application threads may be asked to help with the garbage collecting process. A collector is said to be <em>incremental</em> if at least part of the collection work is performed by application threads. Two common examples are:</p>
+<ul>
+<li><strong>Mark &amp; Sweep</strong>: The sweeping phase may not actually be conducted by collector threads, but instead, it may be executed lazily by application threads only when attempting to allocate memory and none is available;</li>
+<li><strong>Concurrent, Compacting collectors</strong>: Certain concurrent, compacting collectors will run in two phases: first they mark all the live objects and then decide which regions need to be evacuated. All the live objects in a region marked to be evacuated will be moved to a new region and when the process is finished the original region can be marked as free for new allocations. It may happen that thousands of regions are marked as needing evacuation but it may take some time for the collector threads to process them all. As mutator threads keep using the heap throughout this process, they may help the collectors threads by eagerly evacuation any</li>
+</ul>
+<h3 id="conservative-collector">Conservative Collector</h3>
+<p>A <em>conservative collector</em> runs in unsafe languages, such as C or C++. Such a collector must be way more conservative in its assumptions than the typical Java or C# collector. In one hand, and given that the developer is in direct control of memory, it needs to be very careful in the way it interprets memory. On the other hand, it doesn&rsquo;t have, for the most part, any kind of collaboration of the runtime system: no runtime type information or reflection capabilities like the typical, modern, safe language does.</p>
+<p>What this translates to, in practical terms, is to having a garbage collector that cannot under any circumstances move objects around (hence, a non-moving collector), as that would break any reference pointing to the moved object, and it may need at times to treat arbitrary integers in memory as pointers, as it may be unable to ascertain with total confidence whether a given value in memory is a number or value or a pointer proper. This of course makes the algorithm have to work a lot harder while yielding inferior results when comparing to its non-conservative counterparts.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>We have by now surveyed the major topics in the garbage collection landscape. Other more specific topics, such how do parallel collectors distribute their load, how generational collectors can avoid having to always scan the full heap in search of pointers to the young generation, how can tens or even hundreds of application threads avoid huge contention when attempting to simultaneously allocate memory from the heap or how does Java&rsquo;s Concurrent Mark &amp; Sweep work will have to wait for a later post.</p>
+<h2 id="references">References</h2>
+<ul>
+<li>[JMC] <em>Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I</em>, by John McCarthy</li>
+<li>[GCH] <em>The Garbage Collection Handbook: The Art of Automatic Memory Management</em>, by Richard Jones, Antony Hosking, Eliot Moss</li>
+<li>[COMP] <em>The Compressor: Concurrent, Incremental, and Parallel Compaction</em>, by Haim Kermany, Erez Petrank</li>
+<li>[G1GC] <em>Garbage-First Garbage Collection</em>, by David Detlefs, Christine Flood, Steve Heller, Tony Printezis</li>
+<li>[SHE] <em>Shenandoah: An open-source concurrent compacting garbage collector for OpenJDK</em>, by Christine H. Flood et al</li>
+<li>[SHEC] <a href="https://github.com/openjdk/jdk/blob/b63b9a2edb955cb754433c14872071d54582bc6e/src/hotspot/share/gc/shenandoah/shenandoahMarkCompact.hpp#L39"><em>jdk/src/hotspot/share/gc/shenandoah/shenandoahMarkCompact.hpp</em></a></li>
+<li>[LISP2] <em>A compaction procedure for variable-length storage elements</em>, by B. K. Haddon*, W. M. Waitef.</li>
+</ul>
+
+        <h2></h2>
+    </div>
+
+    
+    <div style="display: block; text-align: center;">
+        <div>
+            
+        </div>
+        <div>
+             
+        </div>
+    </div>
+    <br><br><br>
+    
+
+
+        </div>
+        
+    </body>
+</html>

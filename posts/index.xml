@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Jorge Branch&#39;s Tech Blog</title>
-    <link>https://jorgedfbranco.github.io/</link>
-    <description>Recent content on Jorge Branch&#39;s Tech Blog</description>
+    <title>Posts on Jorge Branch&#39;s Tech Blog</title>
+    <link>https://jorgedfbranco.github.io/posts/</link>
+    <description>Recent content in Posts on Jorge Branch&#39;s Tech Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 06 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 06 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>The Shenandoah Garbage Collector - An Introduction</title>
       <link>https://jorgedfbranco.github.io/posts/shenandoah-gc-an-introduction/</link>
@@ -14,16 +14,6 @@
       
       <guid>https://jorgedfbranco.github.io/posts/shenandoah-gc-an-introduction/</guid>
       <description>Introduction Most modern languages, such as Java, C#, Python, Ruby, Go or JavaScript don&amp;rsquo;t require direct developer intervention in the management of memory. For the creation of a new Point object, a call to new Point() is enough, and all the particular details of how the respective memory is going to be allocated and eventually deallocated are left to the virtual machine&amp;rsquo;s garbage collector. Barring Rust and Objective-C, the trend over the last decades is evident: all new languages are garbage collected.</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>https://jorgedfbranco.github.io/about/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://jorgedfbranco.github.io/about/</guid>
-      <description>Software Engineer originally from Lisbon, currently living in Zürich.
- </description>
     </item>
     
   </channel>
