@@ -13,7 +13,7 @@
       <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>https://jorgedfbranco.github.io/posts/shenandoah-gc-an-introduction/</guid>
-      <description>Introduction Most modern languages, such as Java, C#, Python, Ruby, Go or JavaScript don&amp;rsquo;t require direct developer intervention in the management of memory. For the creation of a new Point object, a call to new Point() is enough, and all the particular details of how the respective memory is going to be allocated and eventually deallocated are left to the virtual machine&amp;rsquo;s garbage collector. Barring Rust and Objective-C, the trend over the last decades is evident: all new languages are garbage collected.</description>
+      <description></description>
     </item>
     
   </channel>
