@@ -1,24 +1,81 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-	<channel>
-		<title>Posts on Jorge Branco&#39;s Tech Blog</title>
-		<link>https://jorgedfbranco.github.io/posts/</link>
-		<description>Recent content in Posts on Jorge Branco&#39;s Tech Blog</description>
-		<generator>Hugo -- gohugo.io</generator>
-		<language>en-us</language>
-		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Tue, 03 Aug 2021 00:00:00 +0000</lastBuildDate>
-		<atom:link href="https://jorgedfbranco.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
-		
-		<item>
-			<title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
-			<link>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</link>
-			<pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
-			
-			<guid>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</guid>
-			<description>Let&amp;rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Writing an Expression Evaluator with Recursive-Descent Parsing">
+<meta itemprop="description" content="Let&rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
 Examples of such calls and their respective return values would be:
- evalExpr(&amp;quot;1 + 2 * 3 / 4 - 1&amp;quot;) = 1.5. evalExpr(&amp;quot;1 * (2 + 3)&amp;quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&amp;rsquo;s Shunting-yard algorithm, but in this article we&amp;rsquo;re going to focus on solving it with a recursive-descent parser, as it&amp;rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.</description>
-			<content type="html"><![CDATA[<p>Let&rsquo;s consider the problem of implementing a function <code>evalExpr(str): double</code> that, given an arbitrary well-formed mathematical expression, calculates its value.</p>
+ evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1.5. evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language."><meta itemprop="datePublished" content="2021-08-03T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-08-03T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1672">
+<meta itemprop="keywords" content="java,algorithms,parser,recursive-descent,compilers," /><meta property="og:title" content="Writing an Expression Evaluator with Recursive-Descent Parsing" />
+<meta property="og:description" content="Let&rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
+Examples of such calls and their respective return values would be:
+ evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1.5. evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-08-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-08-03T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Writing an Expression Evaluator with Recursive-Descent Parsing"/>
+<meta name="twitter:description" content="Let&rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
+Examples of such calls and their respective return values would be:
+ evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1.5. evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.0e8d3ce92560bb992cca7e6e4cb8cea5d50c36d90c0486ca18b5fa229dd3341d.css" integrity="sha256-Do086SVgu5ksyn5uTLjOpdUMNtkMBIbKGLX6Ip3TNB0=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://jorgedfbranco.github.io">Jorge Branco&#39;s Tech Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://jorgedfbranco.github.io/posts/">Posts</a>
+				<a href="https://jorgedfbranco.github.io/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/jorgedfbranco" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://linkedin.com/in/jorgedfbranco" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://jorgedfbranco.github.io/posts/">Posts</a></li>
+			<li><a href="https://jorgedfbranco.github.io/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Aug 3, 2021</span></div>
+				<h1>Writing an Expression Evaluator with Recursive-Descent Parsing</h1>
+			</header>
+			<div class="content">
+				<p>Let&rsquo;s consider the problem of implementing a function <code>evalExpr(str): double</code> that, given an arbitrary well-formed mathematical expression, calculates its value.</p>
 <p>Examples of such calls and their respective return values would be:</p>
 <ul>
 <li><code>evalExpr(&quot;1 + 2 * 3 / 4 - 1&quot;) = 1.5</code>.</li>
@@ -42,7 +99,7 @@ Examples of such calls and their respective return values would be:
     <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Invalid input string.&#34;</span><span class="o">);</span>
 <span class="o">}</span>
 </code></pre></div><p>The conversion process is quite mechanical, and is one of the main selling points of recursive-descent parsers.</p>
-<h1 id="defining-the-grammar-a-first-stab">Defining the Grammar: A First Stab</h1>
+<h1 id="defining-the-grammar-a-first-stab">Defining the Grammar: A First Stab<a href="#defining-the-grammar-a-first-stab" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
 <p>We&rsquo;ll now come up with a grammar that describes the full set of strings our little program is able to process, that is, the parser&rsquo;s language:</p>
 <pre><code>S -&gt; S '+' S
    | S '-' S
@@ -52,7 +109,7 @@ Examples of such calls and their respective return values would be:
    | int
 </code></pre><p>This grammar will indeed accept any correctly formed mathematical expression, and it&rsquo;s going to reject all other input strings. Unfortunately, there are more earthly concerns to take into consideration when coming up with a grammar, and the above shown grammar fails on multiple fronts on that regard.</p>
 <p>Let&rsquo;s go through the problems the above grammar presents:</p>
-<h2 id="problem-1-ambiguity">Problem 1: Ambiguity</h2>
+<h2 id="problem-1-ambiguity">Problem 1: Ambiguity<a href="#problem-1-ambiguity" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>The grammar as presently stated is ambiguous. An ambiguous grammar contains multiple possible leftmost-derivations of at least a subset of the accepted input strings:</p>
 <p>For instance, the input string <code>1 / 2 / 3</code> can be derived both by</p>
 <pre><code>S =&gt; S '/' S
@@ -63,7 +120,7 @@ Examples of such calls and their respective return values would be:
   =&gt; int '/' S
   =&gt; ...
 </code></pre><p>This may be a show-stopper for some sorts of parsers (especially bottom-up parsers) but needs not be for a recursive-descent one. We&rsquo;ll keep this in mind, as our final grammar will indeed be non-ambiguous.</p>
-<h2 id="problem-2-lack-of-precedence-rules">Problem 2: Lack of Precedence Rules</h2>
+<h2 id="problem-2-lack-of-precedence-rules">Problem 2: Lack of Precedence Rules<a href="#problem-2-lack-of-precedence-rules" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>The grammar doesn&rsquo;t enforce any kind of precedence rules. Examples of possible derivations of <code>1 + 2 * 3</code>  are:</p>
 <pre><code>S =&gt; S '+' S
   =&gt; S '+' (S '*' S)
@@ -87,7 +144,7 @@ B -&gt; B '*' B
 C -&gt; '(' A ')'
    | int
 </code></pre><p>With this reformulation, it&rsquo;s now guaranteed that all derivations will have the right precedence levels.</p>
-<h2 id="problem-3-left-recursiveness">Problem 3: Left-Recursiveness</h2>
+<h2 id="problem-3-left-recursiveness">Problem 3: Left-Recursiveness<a href="#problem-3-left-recursiveness" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>As described in the intro, the gist of recursive-descent is to convert our grammar into some running code, where each non-terminal left-side definition <code>X</code> ends up as a method definition <code>X()</code>, and any reference to non-terminal <code>X</code> gets translated into a call to <code>X()</code>.</p>
 <p>For example, the following production</p>
 <pre><code>A -&gt; A '+' A
@@ -121,7 +178,7 @@ C -&gt; '(' A ')'
    | int
    | A
 </code></pre><p>the left-recursiveness would still be there and this could still, at least for some inputs, lead to stackoverflows.</p>
-<h2 id="problem-4-operators-right-associativity">Problem 4: Operators Right-Associativity</h2>
+<h2 id="problem-4-operators-right-associativity">Problem 4: Operators Right-Associativity<a href="#problem-4-operators-right-associativity" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>Addition or multiplication operators are said to be associative operators &ndash; <code>(A op B) op C = A op (B op C)</code>. Unfortunately, the same is not true for subtractions and divisions, where for instance, <code>(A / B) / C != A / (B / C)</code> for the general case. This again presents a problem, as fixing the left-recursiveness of the grammar now made our operators right-associative.</p>
 <p>Luckily, we can fix the problem by reformulating our grammar as:</p>
 <pre><code>A -&gt; B ['+' | '-') B]*
@@ -129,14 +186,14 @@ B -&gt; C ['*' | '/') C]*
 C -&gt; '(' A ')'
    | int
 </code></pre><p>so for the non-terminals <code>A</code> and <code>B</code>, the corresponding code will start by consuming the first non-terminal they find (in this case, <code>B</code> and <code>C</code>, respectively) and then, keep consuming any remaining operators followed by non-terminals if there are any. This is going to consume them left-to-right, as we need.</p>
-<h1 id="final-solution">Final Solution</h1>
-<h2 id="grammar">Grammar</h2>
+<h1 id="final-solution">Final Solution<a href="#final-solution" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<h2 id="grammar">Grammar<a href="#grammar" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>Our grammar has suffered a lot of changes throughout the article, but now it should be ready for consumption. Especially when converting it to code, it&rsquo;s quite often important to have readable names, so I adjusted the non-terminal names to something more palatable. Other than that, the grammar is exactly the same as the one we found in the previous section:</p>
 <pre><code>Expr -&gt; Factor ['+' | '-') Factor]*
 Factor -&gt; Term ['*' | '/') Term]*
 Term -&gt; '(' Expr ')'
    | int
-</code></pre><h2 id="code">Code</h2>
+</code></pre><h2 id="code">Code<a href="#code" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>We&rsquo;re finally ready to implement the full parser.</p>
 <p>To run the parser we just need to keep track of:</p>
 <ul>
@@ -238,8 +295,8 @@ Term -&gt; '(' Expr ')'
             <span class="n">i</span><span class="o">++;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h1 id="leetcode-problems">LeetCode Problems</h1>
-<h2 id="ternary-expression-parser">Ternary Expression Parser</h2>
+</code></pre></div><h1 id="leetcode-problems">LeetCode Problems<a href="#leetcode-problems" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<h2 id="ternary-expression-parser">Ternary Expression Parser<a href="#ternary-expression-parser" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>Link: <a href="https://leetcode.com/problems/ternary-expression-parser">https://leetcode.com/problems/ternary-expression-parser</a></p>
 <p>We&rsquo;re asked to implement a ternary operator expression parser. The grammar is quite simple, but we need to be aware the return type of the function can be either an integer or a boolean.</p>
 <p>Grammar:</p>
@@ -281,13 +338,13 @@ Term -&gt; '(' Expr ')'
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h2 id="parsing-a-boolean-expression">Parsing A Boolean Expression</h2>
+</code></pre></div><h2 id="parsing-a-boolean-expression">Parsing A Boolean Expression<a href="#parsing-a-boolean-expression" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>Link: <a href="https://leetcode.com/problems/parsing-a-boolean-expression/">https://leetcode.com/problems/parsing-a-boolean-expression/</a></p>
 <p>The grammar for this problem is:</p>
 <pre><code>A -&gt; '!(' A ')'
    | ('|(' | '&amp;(') A (',' A)*) ')'
    | ('t' | 'f')
-</code></pre><h2 id="calculators">Calculators</h2>
+</code></pre><h2 id="calculators">Calculators<a href="#calculators" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>Links:</p>
 <ul>
 <li><a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a></li>
@@ -295,139 +352,38 @@ Term -&gt; '(' Expr ')'
 <li><a href="https://leetcode.com/problems/basic-calculator-iii/">https://leetcode.com/problems/basic-calculator-iii/</a></li>
 </ul>
 <p>This series of calculator problems all require a similar grammar to the one we developed on this article.</p>
-]]></content>
-		</item>
-		
-		<item>
-			<title>An Introduction to Binary Search</title>
-			<link>https://jorgedfbranco.github.io/posts/an-introduction-to-binary-search/</link>
-			<pubDate>Fri, 30 Jul 2021 00:00:00 +0000</pubDate>
-			
-			<guid>https://jorgedfbranco.github.io/posts/an-introduction-to-binary-search/</guid>
-			<description>&lt;p&gt;Binary search allows us to quickly &amp;ndash; in &lt;code&gt;O(lg n)&lt;/code&gt; time &amp;ndash; find the index of a value &lt;code&gt;v&lt;/code&gt; in a sorted array &lt;code&gt;A&lt;/code&gt;. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an &lt;code&gt;O(n)&lt;/code&gt; operation), as long as we know the array to be sorted.&lt;/p&gt;</description>
-			<content type="html"><![CDATA[<p>Binary search allows us to quickly &ndash; in <code>O(lg n)</code> time &ndash; find the index of a value <code>v</code> in a sorted array <code>A</code>. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an <code>O(n)</code> operation), as long as we know the array to be sorted.</p>
-<h1 id="the-vanilla-algorithm">The Vanilla Algorithm</h1>
-<p>The algorithm works by firstly considering that <code>v</code>, if in the array, must exist somewhere in the interval</p>
-<pre><code>I = [start, end] 
-   = [0, len(A) - 1]
-</code></pre>
-<p><img style="display: block; margin-left: auto; margin-right: auto; margin-top: 36px; margin-bottom: 36px;" width="500px" src="binary-search-0.svg" /></p>
-<p>We can then ask ourselves the question: could it be that <code>v</code> is right at the middle of <code>I</code>, at index</p>
-<pre><code>mid = start + (end - start) / 2
-    = 0 + (len(A) - 1 - 0) / 2
-    = (len(a) - 1) / 2
-</code></pre>
-<p><img style="display: block; margin-left: auto; margin-right: auto; margin-top: 36px; margin-bottom: 36px;" width="500px" src="binary-search.svg" /></p>
-<p>If yes, we&rsquo;ve found our answer and the algorithm is over. If not, then we know that the answer must lie either in the interval</p>
-<ul>
-<li><code>I = [0, mid - 1]</code> if <code>A[mid] &gt; v</code> or</li>
-<li><code>I = [mid + 1, end]</code> if <code>A[mid] &lt; v</code>.</li>
-</ul>
-<p>We can at this point recalculate <code>mid</code> over this new interval and repeat the process all over again. The algorithm is going to progressively halve the length of <code>I</code> until either we find a <code>mid</code> index such that <code>A[mid] = v</code> or until <code>start &gt; end</code>, signalling that <code>v</code> is not in the array.</p>
-<p>As we&rsquo;re halving the size of the considered interval at each step, we&rsquo;re guaranteed to be executing, in the worst case scenario, roughly <code>O(lg n)</code> steps, hence the <code>O(lg n)</code> time complexity of the algorithm.</p>
-<h1 id="implementation">Implementation</h1>
-<p>There are two obvious ways of implementing the algorithm: either iteratively or recursively. Given that the iterative solution avoids stackoverflows and is generally faster without incurring into any obvious downsides, that&rsquo;s the one that will be shown:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">binarySearch</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-  <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
-  <span class="kt">int</span> <span class="n">end</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
-  
-  <span class="k">while</span> <span class="o">(</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">start</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">end</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-      <span class="k">return</span> <span class="n">mid</span><span class="o">;</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
-  
-  <span class="k">return</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span> <span class="c1">// we couldn&#39;t find v in the array
-</span><span class="c1"></span><span class="o">}</span>
-</code></pre></div><h1 id="variants">Variants</h1>
-<p>Now that we&rsquo;ve seen how to find a value <code>v</code> in a sorted array <code>A</code>, let&rsquo;s try to solve slightly different problems, all while still using binary search.</p>
-<h2 id="find-first-element">Find First Element</h2>
-<p>What happens when the given sorted array <code>A</code> contains duplicate elements? Our baseline algorithm will immediately return when finding <code>v</code>, so we&rsquo;re given no guarantees of which index will be returned. It may in certain cases be useful to know we&rsquo;re getting the first index, if multiple exist.</p>
-<p>To do that, we make use of a new variable <code>candidate</code>, that will be used to store the smallest indice we&rsquo;ve found yet of an array element equal to <code>v</code>.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">binarySearch</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-  <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
-  <span class="kt">int</span> <span class="n">end</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
-  <span class="kt">int</span> <span class="n">candidate</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
-  
-  <span class="k">while</span> <span class="o">(</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">start</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">end</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-      <span class="n">candidate</span> <span class="o">=</span> <span class="n">mid</span><span class="o">;</span>
-      <span class="n">end</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
-  
-  <span class="k">return</span> <span class="n">candidate</span> <span class="o">==</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">?</span> <span class="o">-</span><span class="n">1</span> <span class="o">:</span> <span class="n">candidate</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></div><h2 id="count-number-of-occurrences">Count Number Of Occurrences</h2>
-<p>And what about finding how many occurrences of a given <code>v</code> can we find in a sorted array? One possibility would be implementing two methods, one calculating the index of the first occurrence of <code>v</code> in <code>A</code> (<code>leftIdx</code>) and another one calculating the index of the last occurrence of <code>v</code> in <code>A</code> (<code>rightIdx</code>). The number of occurrences would then be <code>rightIdx - leftIdx + 1</code>.</p>
-<p>And while that solution works, it also means some duplicated code.. something we&rsquo;d like to avoid.</p>
-<p>A better alternative is to implement a single <code>binarySearch(A, v)</code> method that will calculate what&rsquo;s the index of the first index of <code>v</code>, if <code>v</code> exists, or what would the index be in case we&rsquo;d like to insert <code>v</code> into <code>A</code>. We can then use <code>leftIndex = binarySearch(A, v)</code> to find the index of the first element in the array, if it exists, and then calculate <code>rightIndex = binarySearch(A, v + 1)</code> to find the index of the next element, if it exists. The result should then be <code>rightIndex - leftIndex</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">countOccurrences</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-  <span class="kt">int</span> <span class="n">leftIdx</span> <span class="o">=</span> <span class="n">binarySearch</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>
-  <span class="k">if</span> <span class="o">(</span><span class="n">leftIdx</span> <span class="o">==</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">||</span> <span class="n">A</span><span class="o">[</span><span class="n">leftIdx</span><span class="o">]</span> <span class="o">!=</span> <span class="n">v</span><span class="o">)</span>
-    <span class="k">return</span> <span class="n">0</span><span class="o">;</span>
 
-  <span class="kt">int</span> <span class="n">rightIdx</span> <span class="o">=</span> <span class="n">binarySearch</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://jorgedfbranco.github.io/tags/java">java</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/algorithms">algorithms</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/parser">parser</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/recursive-descent">recursive-descent</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/compilers">compilers</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1672 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2021-08-03 02:00 &#43;0200</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://jorgedfbranco.github.io/posts/an-introduction-to-binary-search/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>An Introduction to Binary Search</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
 
-  <span class="k">return</span> <span class="n">rightIdx</span> <span class="o">-</span> <span class="n">leftIdx</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></div><p>Do note we could alternatively have defined <code>binarySearch(A, v, start, end)</code>, such that the call to calculate the first index would go like</p>
-<pre><code>leftIndex = binarySearch(A, v, 0, A.length - 1)
-</code></pre>
-<p>and for the right index</p>
-<pre><code>rightIndex = binarySearch(A, v + 1, leftIndex + 1, end)
-</code></pre>
-<h2 id="building-a-balanced-binary-search-tree-out-of-a-sorted-array">Building a Balanced Binary Search Tree Out of a Sorted Array</h2>
-<p>If we&rsquo;re given a sorted array, what&rsquo;s the quickest way of creating a balanced binary search tree out of it?</p>
-<p>Well, as the diagram below exemplifies, the root node is right at the center of the interval that goes from the first to the last elements of the array. It&rsquo;s left subnode and right subnodes also sit at the middle of the intervals <code>[0, mid - 1]</code> and <code>[mid + 1, end]</code>, and so on:</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto; margin-top: 36px; margin-bottom: 36px;" width="480" src="bst-building.svg" /></p>
-<p>So a simple recursive implementation that always creates a node out of the current mid should suffice:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">Node</span> <span class="nf">createTree</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">createTree</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">);</span>
-<span class="o">}</span>
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2021 <a href="https://jorgedfbranco.github.io">Jorge Branco</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://jorgedfbranco.github.io/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
 
-<span class="kd">private</span> <span class="kd">static</span> <span class="n">Node</span> <span class="nf">createTree</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">,</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="kt">int</span> <span class="n">end</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">if</span> <span class="o">(</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">end</span><span class="o">)</span>
-    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-    
-  <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
-  
-  <span class="k">return</span> <span class="k">new</span> <span class="n">Node</span><span class="o">(</span>
-    <span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">],</span>
-    <span class="n">createTree</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">1</span><span class="o">),</span>
-    <span class="n">createTree</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">1</span><span class="o">,</span> <span class="n">end</span><span class="o">)</span>
-  <span class="o">);</span>
-<span class="o">}</span>
-</code></pre></div><p>This problem can also be seen at <a href="https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/">Leetcode - Convert Sorted Array To Binary Search Tree</a>.</p>
-<h1 id="problems">Problems</h1>
-<p>Here I&rsquo;m listing some interesting applications of binary search to leetcode problems. For some of them binary search may come as the obvious technique to use, while for others, not so much.</p>
-<h2 id="first-bad-version">First Bad Version</h2>
-<p>Link: <a href="https://leetcode.com/problems/first-bad-version">First Bad Version</a></p>
-<p>Binary search. If the version is bad, keep the current version as a candidate result but attempt to find a previous version that is also bad.</p>
-<h2 id="search-a-2d-matrix">Search a 2D Matrix</h2>
-<p>Link: <a href="https://leetcode.com/problems/search-a-2d-matrix/">Search a 2D Matrix</a></p>
-<p>At first sight, we may be tempted to solve it with two <code>binarySearch()</code> methods: one that searches over rows and another one searching over columns. But we can avoid all of that if we instead think of this 2D array as a single 1D array, making use of the fact that we know that the last element of row <code>R</code> is always smaller than the first element of row <code>R + 1</code>. Then it all just turns into a matter of converting indexes from the 1D to the 2D array back and forth while binary searching.</p>
-<h2 id="sqrtx">Sqrt(x)</h2>
-<p>Link: <a href="https://leetcode.com/problems/sqrtx/">Sqrt(x)</a></p>
-<p>There are for sure more efficient ways to calculate the square root of a number, but binary search can also help us here if we&rsquo;re don&rsquo;t know any better.</p>
-<p>Gist of the algorithm: we know that the square root of a number <code>k</code> must be a number between <code>1</code> and <code>k</code>, so we can binary search over that interval, finding a result in <code>O(lg n)</code> time.</p>
-<h2 id="minimum-number-of-days-to-make-m-bouquets">Minimum Number of Days to Make m Bouquets</h2>
-<p>Link: <a href="https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets">Minimum Number of Days to Make m Bouquets</a></p>
-<p>We want to guess what&rsquo;s the minimum number of days containing enough sequences of already blossomed flowers to create the needed amount of bouquets. Checking whether at a given day there are enough adjacent flowers to create all the needed bouquets can be calculated in <code>O(n)</code>, so we just need to binary search over the possible range of days (minimum and maximum days that a flower can blossom). The end solution will comfortably run in <code>O(n lg n)</code>.</p>
-<h2 id="koko-eating-bananas">Koko Eating Bananas</h2>
-<p>Link: <a href="https://leetcode.com/problems/koko-eating-bananas">Koko Eating Bananas</a>.</p>
-<p>A problem that can be solved similarly to <code>Minimum Number of Days to Make M Bouquets</code>.</p>]]></content>
-		</item>
-		
-	</channel>
-</rss>
+
+
+	<script src="https://jorgedfbranco.github.io/js/bundle.min.c048d1b7b0dfdbf1acd4dbd8544a2443fd6da4779e066fe86af64ad37eed258a.js" integrity="sha256-wEjRt7Df2/Gs1NvYVEokQ/1tpHeeBm/oavZK037tJYo=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>
