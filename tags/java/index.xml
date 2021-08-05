@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>java on Jorge Branco&#39;s Tech Blog</title>
+    <link>https://github.io/jorgedfbranco/tags/java/</link>
+    <description>Recent content in java on Jorge Branco&#39;s Tech Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Tue, 03 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://github.io/jorgedfbranco/tags/java/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
+      <link>https://github.io/jorgedfbranco/posts/writing-a-recursive-descent-parser/</link>
+      <pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.io/jorgedfbranco/posts/writing-a-recursive-descent-parser/</guid>
+      <description>&lt;p&gt;Let&amp;rsquo;s consider the problem of implementing a function &lt;code&gt;evalExpr(str): double&lt;/code&gt; that, given an arbitrary well-formed mathematical expression, calculates its value.&lt;/p&gt;
+&lt;p&gt;Examples of such calls and their respective return values would be:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;evalExpr(&amp;quot;1 + 2 * 3 / 4 - 1&amp;quot;) = 1.5&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;evalExpr(&amp;quot;1 * (2 + 3)&amp;quot;) = 5&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&amp;rsquo;s &lt;a href=&#34;https://en.wikipedia.org/wiki/Shunting-yard_algorithm&#34;&gt;Shunting-yard algorithm&lt;/a&gt;, but in this article we&amp;rsquo;re going to focus on solving it with a &lt;code&gt;recursive-descent&lt;/code&gt; parser, as it&amp;rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.&lt;/p&gt;
+&lt;p&gt;The approach will be to define a &lt;code&gt;context-free grammar&lt;/code&gt; (CFG) first and once we&amp;rsquo;re confident that it correctly describes our little mathematical language and that it can be realistically lead to a functioning parser, we&amp;rsquo;ll proceed to create a recursive-descent parser out of it.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>An Introduction to Binary Search</title>
+      <link>https://github.io/jorgedfbranco/posts/an-introduction-to-binary-search/</link>
+      <pubDate>Fri, 30 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.io/jorgedfbranco/posts/an-introduction-to-binary-search/</guid>
+      <description>&lt;p&gt;Binary search allows us to quickly &amp;ndash; in &lt;code&gt;O(lg n)&lt;/code&gt; time &amp;ndash; find the index of a value &lt;code&gt;v&lt;/code&gt; in a sorted array &lt;code&gt;A&lt;/code&gt;. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an &lt;code&gt;O(n)&lt;/code&gt; operation), as long as we know the array to be sorted.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

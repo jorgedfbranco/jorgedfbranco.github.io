@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Writing an Expression Evaluator with Recursive-Descent Parsing">
+<meta itemprop="description" content="Let&rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
+Examples of such calls and their respective return values would be:
+
+evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1.5.
+evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.
+
+How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.
+The approach will be to define a context-free grammar (CFG) first and once we&rsquo;re confident that it correctly describes our little mathematical language and that it can be realistically lead to a functioning parser, we&rsquo;ll proceed to create a recursive-descent parser out of it."><meta itemprop="datePublished" content="2021-08-03T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-08-03T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1116">
+<meta itemprop="keywords" content="java,algorithms,parser,recursive-descent,compilers," /><meta property="og:title" content="Writing an Expression Evaluator with Recursive-Descent Parsing" />
+<meta property="og:description" content="Let&rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
+Examples of such calls and their respective return values would be:
+
+evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1.5.
+evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.
+
+How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.
+The approach will be to define a context-free grammar (CFG) first and once we&rsquo;re confident that it correctly describes our little mathematical language and that it can be realistically lead to a functioning parser, we&rsquo;ll proceed to create a recursive-descent parser out of it." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://github.io/jorgedfbranco/posts/writing-a-recursive-descent-parser/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-08-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-08-03T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Writing an Expression Evaluator with Recursive-Descent Parsing"/>
+<meta name="twitter:description" content="Let&rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
+Examples of such calls and their respective return values would be:
+
+evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1.5.
+evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.
+
+How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.
+The approach will be to define a context-free grammar (CFG) first and once we&rsquo;re confident that it correctly describes our little mathematical language and that it can be realistically lead to a functioning parser, we&rsquo;ll proceed to create a recursive-descent parser out of it."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/jorgedfbranco/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/jorgedfbranco/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/jorgedfbranco/favicon-16x16.png">
+	<link rel="manifest" href="/jorgedfbranco/site.webmanifest">
+	<link rel="mask-icon" href="/jorgedfbranco/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/jorgedfbranco/favicon.ico">
+
+	<title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
+	<link rel="stylesheet" href="https://github.io/jorgedfbranco/css/style.min.0e8d3ce92560bb992cca7e6e4cb8cea5d50c36d90c0486ca18b5fa229dd3341d.css" integrity="sha256-Do086SVgu5ksyn5uTLjOpdUMNtkMBIbKGLX6Ip3TNB0=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://github.io/jorgedfbranco">Jorge Branco&#39;s Tech Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+				<a href="https://github.io/jorgedfbranco/posts/">Posts</a>
+				<a href="https://github.io/jorgedfbranco/about/">About</a>
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/jorgedfbranco" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://linkedin.com/in/jorgedfbranco" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://github.io/jorgedfbranco/posts/">Posts</a></li>
+			<li><a href="https://github.io/jorgedfbranco/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Aug 3, 2021</span></div>
+				<h1>Writing an Expression Evaluator with Recursive-Descent Parsing</h1>
+			</header>
+			<div class="content">
+				<p>Let&rsquo;s consider the problem of implementing a function <code>evalExpr(str): double</code> that, given an arbitrary well-formed mathematical expression, calculates its value.</p>
+<p>Examples of such calls and their respective return values would be:</p>
+<ul>
+<li><code>evalExpr(&quot;1 + 2 * 3 / 4 - 1&quot;) = 1.5</code>.</li>
+<li><code>evalExpr(&quot;1 * (2 + 3)&quot;) = 5</code>.</li>
+</ul>
+<p>How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s <a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">Shunting-yard algorithm</a>, but in this article we&rsquo;re going to focus on solving it with a <code>recursive-descent</code> parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.</p>
+<p>The approach will be to define a <code>context-free grammar</code> (CFG) first and once we&rsquo;re confident that it correctly describes our little mathematical language and that it can be realistically lead to a functioning parser, we&rsquo;ll proceed to create a recursive-descent parser out of it.</p>
+<p>Turning a CFG into such a parser is for the most part a relatively straight-forward, albeit repetitive, process. Each non-terminal will be turned into a method of the same name, where all its productions are then processed. As an example:</p>
+<pre><code>A -&gt; B '+' C
+   | B '-' D
+</code></pre><p>would turn into:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">A</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">B</span><span class="o">();</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">consumeChr</span><span class="o">(</span><span class="sc">&#39;+&#39;</span><span class="o">))</span> <span class="n">C</span><span class="o">();</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">consumeChr</span><span class="o">(</span><span class="sc">&#39;-&#39;</span><span class="o">))</span> <span class="n">D</span><span class="o">();</span>
+  <span class="k">else</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Invalid input string.&#34;</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div><p>The conversion process is quite mechanical, and is one of the main sell-points of recursive-descent parsers.</p>
+<h1 id="defining-the-grammar-a-first-stab">Defining the Grammar: A First Stab<a href="#defining-the-grammar-a-first-stab" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<p>We&rsquo;ll now come up with a grammar that describes the full set of strings our little program is able to process, that is, the parser&rsquo;s language:</p>
+<pre><code>S -&gt; S '+' S
+   | S '-' S
+   | S '*' S
+   | S '/' S
+   | '(' S ')'
+   | int
+</code></pre><p>This grammar will indeed accept any correctly formed mathematical expression, and it&rsquo;s going to reject any other input string. Unfortunately, there are more earthly concerns to take into consideration when coming up with a grammar, and the above shown grammar fails on multiple fronts on that regard.</p>
+<p>Let&rsquo;s go through the problems the above grammar presents:</p>
+<h2 id="problem-ambiguity">Problem: Ambiguity<a href="#problem-ambiguity" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>The grammar is ambiguous. An ambiguous grammar contains multiple possible leftmost-derivations of at least a subset of the allowed input strings:</p>
+<p>For instance, the input string <code>1 / 2 / 3</code> can be derived both by</p>
+<pre><code>S =&gt; S '/' S
+  =&gt; (S '/' S) '/' S
+  =&gt; ...
+</code></pre><p>or</p>
+<pre><code>S =&gt; S '/' S
+  =&gt; int '/' S
+  =&gt; ...
+</code></pre><p>This may be a show-stopper for some sort of parsers (especially bottom-up ones) but needs not be for a recursive-descent one.</p>
+<h2 id="problem-lack-of-precedence-rules">Problem: Lack of Precedence Rules<a href="#problem-lack-of-precedence-rules" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>The grammar doesn&rsquo;t enforce any kind of precedence rules. Examples of possible derivations of <code>1 + 2 * 3</code>  are:</p>
+<pre><code>S =&gt; S '+' S
+  =&gt; S '+' (S '*' S)
+  ...
+  =&gt; 1 + (2 * 3) = 7
+</code></pre><p>and</p>
+<pre><code>S =&gt; S '*' S
+  =&gt; (S '+' S) '*' S
+  ...
+  =&gt; (1 + 2) * 3 = 9
+</code></pre><p>which is highly problematic. To properly take into account operator precedence, we&rsquo;ll augment our grammar with a new non-terminal per precedence level &ndash; the higher a precedence level is, the &ldquo;deeper&rdquo; in the derivation the non-terminal is:</p>
+<pre><code>A -&gt; B '+' B
+   | B '-' B
+
+B -&gt; C '*' C
+   | C '/' C
+
+C -&gt; '(' A ')'
+   | int
+</code></pre><p>With this reformulation, it&rsquo;s now guaranteed that all derivations will have the right precedence levels.</p>
+<h2 id="problem-left-recursiveness">Problem: Left-Recursiveness<a href="#problem-left-recursiveness" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>The idea with recursive-descent parser is to convert each left-hand non-terminal</p>
+<pre><code>A -&gt; A '+' A
+  ...
+</code></pre><p>into its own function:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">int</span> <span class="nf">A</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="n">A</span><span class="o">();</span>
+  <span class="kt">char</span> <span class="n">op</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+  <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">B</span><span class="o">();</span>
+
+  <span class="k">if</span> <span class="o">(</span><span class="n">op</span> <span class="o">==</span> <span class="sc">&#39;+&#39;</span><span class="o">)</span>
+    <span class="k">return</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span><span class="o">;</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">op</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span><span class="o">)</span>
+    <span class="k">return</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span><span class="o">;</span>
+  <span class="k">else</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Invalid input string.&#34;</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div><p>The attentive reader will realize that this method will always lead to a stackoverflow: a call to <code>A()</code> will start by making another call to <code>A()</code>, this ad-eternum.</p>
+<h2 id="problem-operators-right-associativity">Problem: Operators Right-Associativity<a href="#problem-operators-right-associativity" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h1 id="end-solution">End Solution<a href="#end-solution" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<h2 id="grammar">Grammar<a href="#grammar" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<h2 id="code">Code<a href="#code" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
+</span><span class="cm"> * An expression can be calculated by invoking {@code double result = ExpressionParser.parse(expr)}.
+</span><span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExpressionParser</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">s</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nf">ExpressionParser</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">double</span> <span class="nf">parse</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">ExpressionParser</span><span class="o">(</span><span class="n">s</span><span class="o">).</span><span class="na">parse</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">parse</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">expression</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// non-terminals processing
+</span><span class="c1"></span>
+    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">expression</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">double</span> <span class="n">v</span> <span class="o">=</span> <span class="n">factor</span><span class="o">();</span>
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;+&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">v</span> <span class="o">+=</span> <span class="n">factor</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;-&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">v</span> <span class="o">-=</span> <span class="n">factor</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">factor</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">double</span> <span class="n">v</span> <span class="o">=</span> <span class="n">term</span><span class="o">();</span>
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;*&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">v</span> <span class="o">*=</span> <span class="n">term</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;/&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">v</span> <span class="o">/=</span> <span class="n">term</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">term</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;(&#39;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="kt">double</span> <span class="n">v</span> <span class="o">=</span> <span class="n">expression</span><span class="o">();</span>
+            <span class="n">consume</span><span class="o">(</span><span class="sc">&#39;)&#39;</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">var</span> <span class="n">integer</span> <span class="o">=</span> <span class="n">consumeInt</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">integer</span><span class="o">.</span><span class="na">isPresent</span><span class="o">())</span>
+                <span class="k">return</span> <span class="n">integer</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Invalid input.&#34;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c1">// terminals consumption
+</span><span class="c1"></span>
+    <span class="kd">private</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="nf">consumeInt</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">consumeSpaces</span><span class="o">();</span>
+
+        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">Character</span><span class="o">.</span><span class="na">isDigit</span><span class="o">(</span><span class="n">c</span><span class="o">))</span>
+            <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">();</span>
+
+        <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">Character</span><span class="o">.</span><span class="na">isDigit</span><span class="o">(</span><span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">10</span> <span class="o">*</span> <span class="n">v</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="o">);</span>
+            <span class="n">i</span><span class="o">++;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">consume</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">consumeSpaces</span><span class="o">();</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">||</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">!=</span> <span class="n">c</span><span class="o">)</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="n">i</span><span class="o">++;</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">consumeSpaces</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="o">)</span>
+            <span class="n">i</span><span class="o">++;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h1 id="leetcode-problems">LeetCode Problems<a href="#leetcode-problems" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<h2 id="ternary-expression-parser">Ternary Expression Parser<a href="#ternary-expression-parser" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Link: <a href="https://leetcode.com/problems/ternary-expression-parser">https://leetcode.com/problems/ternary-expression-parser</a></p>
+<p>We&rsquo;re asked to implement a ternary operator expression parser. The grammar is quite simple, but we need to be aware the return type of the function can be either an integer or a boolean.</p>
+<p>Grammar:</p>
+<pre><code>S -&gt; bool ('?' S ':' S)?
+   | int
+</code></pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">parseTernary</span><span class="o">(</span><span class="n">String</span> <span class="n">expression</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">TernaryParser</span><span class="o">(</span><span class="n">expression</span><span class="o">).</span><span class="na">parse</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">TernaryParser</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">s</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="nf">TernaryParser</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">parse</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">Character</span><span class="o">.</span><span class="na">isDigit</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">v</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">1</span><span class="o">);</span>
+            <span class="n">i</span><span class="o">++;</span>
+            <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">cond</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">1</span><span class="o">);</span>
+            <span class="n">i</span><span class="o">++;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
+                <span class="k">return</span> <span class="n">cond</span><span class="o">;</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">&#39;?&#39;</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">cond</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">i</span><span class="o">++;</span> <span class="c1">// consume &#39;?&#39;
+</span><span class="c1"></span>                <span class="n">String</span> <span class="n">a</span> <span class="o">=</span> <span class="n">parse</span><span class="o">();</span>
+                <span class="n">i</span><span class="o">++;</span> <span class="c1">// consume &#39;:&#39;
+</span><span class="c1"></span>                <span class="n">String</span> <span class="n">b</span> <span class="o">=</span> <span class="n">parse</span><span class="o">();</span>
+                <span class="k">return</span> <span class="n">cond</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;T&#34;</span><span class="o">)</span> <span class="o">?</span> <span class="n">a</span> <span class="o">:</span> <span class="n">b</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="parsing-a-boolean-expression">Parsing A Boolean Expression<a href="#parsing-a-boolean-expression" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Link: <a href="https://leetcode.com/problems/parsing-a-boolean-expression/">https://leetcode.com/problems/parsing-a-boolean-expression/</a></p>
+<p>Grammar</p>
+<pre><code>A -&gt; '!(' A ')'
+   | ('|(' | '&amp;(') A (',' A)*) ')'
+   | ('t' | 'f')
+</code></pre><h2 id="basic-calculator">Basic Calculator<a href="#basic-calculator" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Links:</p>
+<ul>
+<li><a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a></li>
+<li><a href="https://leetcode.com/problems/basic-calculator-ii/">https://leetcode.com/problems/basic-calculator-ii/</a></li>
+<li><a href="https://leetcode.com/problems/basic-calculator-iii/">https://leetcode.com/problems/basic-calculator-iii/</a></li>
+</ul>
+<h1 id="references">References<a href="#references" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<p>TODOs</p>
+<ul>
+<li>CFG grammars</li>
+<li>left-recursiveness</li>
+<li>precedence</li>
+<li>associativity</li>
+<li>Error Parsing</li>
+<li>talk about how usually compilers will use two phases, lexer/tokenizer + parsing but that we won&rsquo;t to make this simpler</li>
+</ul>
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-feather"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>Jorge Branco</p>
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://github.io/jorgedfbranco/tags/java">java</a></span><span class="tag"><a href="https://github.io/jorgedfbranco/tags/algorithms">algorithms</a></span><span class="tag"><a href="https://github.io/jorgedfbranco/tags/parser">parser</a></span><span class="tag"><a href="https://github.io/jorgedfbranco/tags/recursive-descent">recursive-descent</a></span><span class="tag"><a href="https://github.io/jorgedfbranco/tags/compilers">compilers</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1116 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2021-08-03 02:00 &#43;0200</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://github.io/jorgedfbranco/posts/an-introduction-to-binary-search/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>An Introduction to Binary Search</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2021 <a href="https://github.io/jorgedfbranco">Jorge Branco</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://github.io/jorgedfbranco/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://github.io/jorgedfbranco/js/bundle.min.c048d1b7b0dfdbf1acd4dbd8544a2443fd6da4779e066fe86af64ad37eed258a.js" integrity="sha256-wEjRt7Df2/Gs1NvYVEokQ/1tpHeeBm/oavZK037tJYo=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

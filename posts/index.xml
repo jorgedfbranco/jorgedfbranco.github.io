@@ -1,0 +1,403 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Posts on Jorge Branco&#39;s Tech Blog</title>
+		<link>https://github.io/jorgedfbranco/posts/</link>
+		<description>Recent content in Posts on Jorge Branco&#39;s Tech Blog</description>
+		<generator>Hugo -- gohugo.io</generator>
+		<language>en-us</language>
+		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+		<lastBuildDate>Tue, 03 Aug 2021 00:00:00 +0000</lastBuildDate>
+		<atom:link href="https://github.io/jorgedfbranco/posts/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
+			<link>https://github.io/jorgedfbranco/posts/writing-a-recursive-descent-parser/</link>
+			<pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
+			
+			<guid>https://github.io/jorgedfbranco/posts/writing-a-recursive-descent-parser/</guid>
+			<description>&lt;p&gt;Let&amp;rsquo;s consider the problem of implementing a function &lt;code&gt;evalExpr(str): double&lt;/code&gt; that, given an arbitrary well-formed mathematical expression, calculates its value.&lt;/p&gt;
+&lt;p&gt;Examples of such calls and their respective return values would be:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;evalExpr(&amp;quot;1 + 2 * 3 / 4 - 1&amp;quot;) = 1.5&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;evalExpr(&amp;quot;1 * (2 + 3)&amp;quot;) = 5&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&amp;rsquo;s &lt;a href=&#34;https://en.wikipedia.org/wiki/Shunting-yard_algorithm&#34;&gt;Shunting-yard algorithm&lt;/a&gt;, but in this article we&amp;rsquo;re going to focus on solving it with a &lt;code&gt;recursive-descent&lt;/code&gt; parser, as it&amp;rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.&lt;/p&gt;
+&lt;p&gt;The approach will be to define a &lt;code&gt;context-free grammar&lt;/code&gt; (CFG) first and once we&amp;rsquo;re confident that it correctly describes our little mathematical language and that it can be realistically lead to a functioning parser, we&amp;rsquo;ll proceed to create a recursive-descent parser out of it.&lt;/p&gt;</description>
+			<content type="html"><![CDATA[<p>Let&rsquo;s consider the problem of implementing a function <code>evalExpr(str): double</code> that, given an arbitrary well-formed mathematical expression, calculates its value.</p>
+<p>Examples of such calls and their respective return values would be:</p>
+<ul>
+<li><code>evalExpr(&quot;1 + 2 * 3 / 4 - 1&quot;) = 1.5</code>.</li>
+<li><code>evalExpr(&quot;1 * (2 + 3)&quot;) = 5</code>.</li>
+</ul>
+<p>How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s <a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">Shunting-yard algorithm</a>, but in this article we&rsquo;re going to focus on solving it with a <code>recursive-descent</code> parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.</p>
+<p>The approach will be to define a <code>context-free grammar</code> (CFG) first and once we&rsquo;re confident that it correctly describes our little mathematical language and that it can be realistically lead to a functioning parser, we&rsquo;ll proceed to create a recursive-descent parser out of it.</p>
+<p>Turning a CFG into such a parser is for the most part a relatively straight-forward, albeit repetitive, process. Each non-terminal will be turned into a method of the same name, where all its productions are then processed. As an example:</p>
+<pre><code>A -&gt; B '+' C
+   | B '-' D
+</code></pre><p>would turn into:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">A</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">B</span><span class="o">();</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">consumeChr</span><span class="o">(</span><span class="sc">&#39;+&#39;</span><span class="o">))</span> <span class="n">C</span><span class="o">();</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">consumeChr</span><span class="o">(</span><span class="sc">&#39;-&#39;</span><span class="o">))</span> <span class="n">D</span><span class="o">();</span>
+  <span class="k">else</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Invalid input string.&#34;</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div><p>The conversion process is quite mechanical, and is one of the main sell-points of recursive-descent parsers.</p>
+<h1 id="defining-the-grammar-a-first-stab">Defining the Grammar: A First Stab</h1>
+<p>We&rsquo;ll now come up with a grammar that describes the full set of strings our little program is able to process, that is, the parser&rsquo;s language:</p>
+<pre><code>S -&gt; S '+' S
+   | S '-' S
+   | S '*' S
+   | S '/' S
+   | '(' S ')'
+   | int
+</code></pre><p>This grammar will indeed accept any correctly formed mathematical expression, and it&rsquo;s going to reject any other input string. Unfortunately, there are more earthly concerns to take into consideration when coming up with a grammar, and the above shown grammar fails on multiple fronts on that regard.</p>
+<p>Let&rsquo;s go through the problems the above grammar presents:</p>
+<h2 id="problem-ambiguity">Problem: Ambiguity</h2>
+<p>The grammar is ambiguous. An ambiguous grammar contains multiple possible leftmost-derivations of at least a subset of the allowed input strings:</p>
+<p>For instance, the input string <code>1 / 2 / 3</code> can be derived both by</p>
+<pre><code>S =&gt; S '/' S
+  =&gt; (S '/' S) '/' S
+  =&gt; ...
+</code></pre><p>or</p>
+<pre><code>S =&gt; S '/' S
+  =&gt; int '/' S
+  =&gt; ...
+</code></pre><p>This may be a show-stopper for some sort of parsers (especially bottom-up ones) but needs not be for a recursive-descent one.</p>
+<h2 id="problem-lack-of-precedence-rules">Problem: Lack of Precedence Rules</h2>
+<p>The grammar doesn&rsquo;t enforce any kind of precedence rules. Examples of possible derivations of <code>1 + 2 * 3</code>  are:</p>
+<pre><code>S =&gt; S '+' S
+  =&gt; S '+' (S '*' S)
+  ...
+  =&gt; 1 + (2 * 3) = 7
+</code></pre><p>and</p>
+<pre><code>S =&gt; S '*' S
+  =&gt; (S '+' S) '*' S
+  ...
+  =&gt; (1 + 2) * 3 = 9
+</code></pre><p>which is highly problematic. To properly take into account operator precedence, we&rsquo;ll augment our grammar with a new non-terminal per precedence level &ndash; the higher a precedence level is, the &ldquo;deeper&rdquo; in the derivation the non-terminal is:</p>
+<pre><code>A -&gt; B '+' B
+   | B '-' B
+
+B -&gt; C '*' C
+   | C '/' C
+
+C -&gt; '(' A ')'
+   | int
+</code></pre><p>With this reformulation, it&rsquo;s now guaranteed that all derivations will have the right precedence levels.</p>
+<h2 id="problem-left-recursiveness">Problem: Left-Recursiveness</h2>
+<p>The idea with recursive-descent parser is to convert each left-hand non-terminal</p>
+<pre><code>A -&gt; A '+' A
+  ...
+</code></pre><p>into its own function:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">int</span> <span class="nf">A</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="n">A</span><span class="o">();</span>
+  <span class="kt">char</span> <span class="n">op</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+  <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">B</span><span class="o">();</span>
+
+  <span class="k">if</span> <span class="o">(</span><span class="n">op</span> <span class="o">==</span> <span class="sc">&#39;+&#39;</span><span class="o">)</span>
+    <span class="k">return</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span><span class="o">;</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">op</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span><span class="o">)</span>
+    <span class="k">return</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span><span class="o">;</span>
+  <span class="k">else</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Invalid input string.&#34;</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div><p>The attentive reader will realize that this method will always lead to a stackoverflow: a call to <code>A()</code> will start by making another call to <code>A()</code>, this ad-eternum.</p>
+<h2 id="problem-operators-right-associativity">Problem: Operators Right-Associativity</h2>
+<h1 id="end-solution">End Solution</h1>
+<h2 id="grammar">Grammar</h2>
+<h2 id="code">Code</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
+</span><span class="cm"> * An expression can be calculated by invoking {@code double result = ExpressionParser.parse(expr)}.
+</span><span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExpressionParser</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">s</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nf">ExpressionParser</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">double</span> <span class="nf">parse</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">ExpressionParser</span><span class="o">(</span><span class="n">s</span><span class="o">).</span><span class="na">parse</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">parse</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">expression</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// non-terminals processing
+</span><span class="c1"></span>
+    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">expression</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">double</span> <span class="n">v</span> <span class="o">=</span> <span class="n">factor</span><span class="o">();</span>
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;+&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">v</span> <span class="o">+=</span> <span class="n">factor</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;-&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">v</span> <span class="o">-=</span> <span class="n">factor</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">factor</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">double</span> <span class="n">v</span> <span class="o">=</span> <span class="n">term</span><span class="o">();</span>
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;*&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">v</span> <span class="o">*=</span> <span class="n">term</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;/&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">v</span> <span class="o">/=</span> <span class="n">term</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">term</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">consume</span><span class="o">(</span><span class="sc">&#39;(&#39;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="kt">double</span> <span class="n">v</span> <span class="o">=</span> <span class="n">expression</span><span class="o">();</span>
+            <span class="n">consume</span><span class="o">(</span><span class="sc">&#39;)&#39;</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">var</span> <span class="n">integer</span> <span class="o">=</span> <span class="n">consumeInt</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">integer</span><span class="o">.</span><span class="na">isPresent</span><span class="o">())</span>
+                <span class="k">return</span> <span class="n">integer</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Invalid input.&#34;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c1">// terminals consumption
+</span><span class="c1"></span>
+    <span class="kd">private</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="nf">consumeInt</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">consumeSpaces</span><span class="o">();</span>
+
+        <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">Character</span><span class="o">.</span><span class="na">isDigit</span><span class="o">(</span><span class="n">c</span><span class="o">))</span>
+            <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">();</span>
+
+        <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">Character</span><span class="o">.</span><span class="na">isDigit</span><span class="o">(</span><span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">10</span> <span class="o">*</span> <span class="n">v</span> <span class="o">+</span> <span class="o">(</span><span class="n">c</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="o">);</span>
+            <span class="n">i</span><span class="o">++;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">consume</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">consumeSpaces</span><span class="o">();</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">||</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">!=</span> <span class="n">c</span><span class="o">)</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="n">i</span><span class="o">++;</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">consumeSpaces</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="sc">&#39; &#39;</span><span class="o">)</span>
+            <span class="n">i</span><span class="o">++;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h1 id="leetcode-problems">LeetCode Problems</h1>
+<h2 id="ternary-expression-parser">Ternary Expression Parser</h2>
+<p>Link: <a href="https://leetcode.com/problems/ternary-expression-parser">https://leetcode.com/problems/ternary-expression-parser</a></p>
+<p>We&rsquo;re asked to implement a ternary operator expression parser. The grammar is quite simple, but we need to be aware the return type of the function can be either an integer or a boolean.</p>
+<p>Grammar:</p>
+<pre><code>S -&gt; bool ('?' S ':' S)?
+   | int
+</code></pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">parseTernary</span><span class="o">(</span><span class="n">String</span> <span class="n">expression</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">TernaryParser</span><span class="o">(</span><span class="n">expression</span><span class="o">).</span><span class="na">parse</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">TernaryParser</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">s</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="nf">TernaryParser</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">parse</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">Character</span><span class="o">.</span><span class="na">isDigit</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">v</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">1</span><span class="o">);</span>
+            <span class="n">i</span><span class="o">++;</span>
+            <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">cond</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">1</span><span class="o">);</span>
+            <span class="n">i</span><span class="o">++;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
+                <span class="k">return</span> <span class="n">cond</span><span class="o">;</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">&#39;?&#39;</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">cond</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">i</span><span class="o">++;</span> <span class="c1">// consume &#39;?&#39;
+</span><span class="c1"></span>                <span class="n">String</span> <span class="n">a</span> <span class="o">=</span> <span class="n">parse</span><span class="o">();</span>
+                <span class="n">i</span><span class="o">++;</span> <span class="c1">// consume &#39;:&#39;
+</span><span class="c1"></span>                <span class="n">String</span> <span class="n">b</span> <span class="o">=</span> <span class="n">parse</span><span class="o">();</span>
+                <span class="k">return</span> <span class="n">cond</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;T&#34;</span><span class="o">)</span> <span class="o">?</span> <span class="n">a</span> <span class="o">:</span> <span class="n">b</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="parsing-a-boolean-expression">Parsing A Boolean Expression</h2>
+<p>Link: <a href="https://leetcode.com/problems/parsing-a-boolean-expression/">https://leetcode.com/problems/parsing-a-boolean-expression/</a></p>
+<p>Grammar</p>
+<pre><code>A -&gt; '!(' A ')'
+   | ('|(' | '&amp;(') A (',' A)*) ')'
+   | ('t' | 'f')
+</code></pre><h2 id="basic-calculator">Basic Calculator</h2>
+<p>Links:</p>
+<ul>
+<li><a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a></li>
+<li><a href="https://leetcode.com/problems/basic-calculator-ii/">https://leetcode.com/problems/basic-calculator-ii/</a></li>
+<li><a href="https://leetcode.com/problems/basic-calculator-iii/">https://leetcode.com/problems/basic-calculator-iii/</a></li>
+</ul>
+<h1 id="references">References</h1>
+<p>TODOs</p>
+<ul>
+<li>CFG grammars</li>
+<li>left-recursiveness</li>
+<li>precedence</li>
+<li>associativity</li>
+<li>Error Parsing</li>
+<li>talk about how usually compilers will use two phases, lexer/tokenizer + parsing but that we won&rsquo;t to make this simpler</li>
+</ul>]]></content>
+		</item>
+		
+		<item>
+			<title>An Introduction to Binary Search</title>
+			<link>https://github.io/jorgedfbranco/posts/an-introduction-to-binary-search/</link>
+			<pubDate>Fri, 30 Jul 2021 00:00:00 +0000</pubDate>
+			
+			<guid>https://github.io/jorgedfbranco/posts/an-introduction-to-binary-search/</guid>
+			<description>&lt;p&gt;Binary search allows us to quickly &amp;ndash; in &lt;code&gt;O(lg n)&lt;/code&gt; time &amp;ndash; find the index of a value &lt;code&gt;v&lt;/code&gt; in a sorted array &lt;code&gt;A&lt;/code&gt;. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an &lt;code&gt;O(n)&lt;/code&gt; operation), as long as we know the array to be sorted.&lt;/p&gt;</description>
+			<content type="html"><![CDATA[<p>Binary search allows us to quickly &ndash; in <code>O(lg n)</code> time &ndash; find the index of a value <code>v</code> in a sorted array <code>A</code>. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an <code>O(n)</code> operation), as long as we know the array to be sorted.</p>
+<h1 id="the-vanilla-algorithm">The Vanilla Algorithm</h1>
+<p>The algorithm works by firstly considering that <code>v</code>, if in the array, must exist somewhere in the interval</p>
+<pre><code>I = [start, end] 
+   = [0, len(A) - 1]
+</code></pre>
+<p><img style="display: block; margin-left: auto; margin-right: auto; margin-top: 36px; margin-bottom: 36px;" width="500px" src="binary-search-0.svg" /></p>
+<p>We can then ask ourselves the question: could it be that <code>v</code> is right at the middle of <code>I</code>, at index</p>
+<pre><code>mid = start + (end - start) / 2
+    = 0 + (len(A) - 1 - 0) / 2
+    = (len(a) - 1) / 2
+</code></pre>
+<p><img style="display: block; margin-left: auto; margin-right: auto; margin-top: 36px; margin-bottom: 36px;" width="500px" src="binary-search.svg" /></p>
+<p>If yes, we&rsquo;ve found our answer and the algorithm is over. If not, then we know that the answer must lie either in the interval</p>
+<ul>
+<li><code>I = [0, mid - 1]</code> if <code>A[mid] &gt; v</code> or</li>
+<li><code>I = [mid + 1, end]</code> if <code>A[mid] &lt; v</code>.</li>
+</ul>
+<p>We can at this point recalculate <code>mid</code> over this new interval and repeat the process all over again. The algorithm is going to progressively halve the length of <code>I</code> until either we find a <code>mid</code> index such that <code>A[mid] = v</code> or until <code>start &gt; end</code>, signalling that <code>v</code> is not in the array.</p>
+<p>As we&rsquo;re halving the size of the considered interval at each step, we&rsquo;re guaranteed to be executing, in the worst case scenario, roughly <code>O(lg n)</code> steps, hence the <code>O(lg n)</code> time complexity of the algorithm.</p>
+<h1 id="implementation">Implementation</h1>
+<p>There are two obvious ways of implementing the algorithm: either iteratively or recursively. Given that the iterative solution avoids stackoverflows and is generally faster without incurring into any obvious downsides, that&rsquo;s the one that will be shown:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">binarySearch</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">end</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+  
+  <span class="k">while</span> <span class="o">(</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">start</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">end</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">mid</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  
+  <span class="k">return</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span> <span class="c1">// we couldn&#39;t find v in the array
+</span><span class="c1"></span><span class="o">}</span>
+</code></pre></div><h1 id="variants">Variants</h1>
+<p>Now that we&rsquo;ve seen how to find a value <code>v</code> in a sorted array <code>A</code>, let&rsquo;s try to solve slightly different problems, all while still using binary search.</p>
+<h2 id="find-first-element">Find First Element</h2>
+<p>What happens when the given sorted array <code>A</code> contains duplicate elements? Our baseline algorithm will immediately return when finding <code>v</code>, so we&rsquo;re given no guarantees of which index will be returned. It may in certain cases be useful to know we&rsquo;re getting the first index, if multiple exist.</p>
+<p>To do that, we make use of a new variable <code>candidate</code>, that will be used to store the smallest indice we&rsquo;ve found yet of an array element equal to <code>v</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">binarySearch</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">end</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">candidate</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+  
+  <span class="k">while</span> <span class="o">(</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">start</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">end</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="n">candidate</span> <span class="o">=</span> <span class="n">mid</span><span class="o">;</span>
+      <span class="n">end</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  
+  <span class="k">return</span> <span class="n">candidate</span> <span class="o">==</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">?</span> <span class="o">-</span><span class="n">1</span> <span class="o">:</span> <span class="n">candidate</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="count-number-of-occurrences">Count Number Of Occurrences</h2>
+<p>And what about finding how many occurrences of a given <code>v</code> can we find in a sorted array? One possibility would be implementing two methods, one calculating the index of the first occurrence of <code>v</code> in <code>A</code> (<code>leftIdx</code>) and another one calculating the index of the last occurrence of <code>v</code> in <code>A</code> (<code>rightIdx</code>). The number of occurrences would then be <code>rightIdx - leftIdx + 1</code>.</p>
+<p>And while that solution works, it also means some duplicated code.. something we&rsquo;d like to avoid.</p>
+<p>A better alternative is to implement a single <code>binarySearch(A, v)</code> method that will calculate what&rsquo;s the index of the first index of <code>v</code>, if <code>v</code> exists, or what would the index be in case we&rsquo;d like to insert <code>v</code> into <code>A</code>. We can then use <code>leftIndex = binarySearch(A, v)</code> to find the index of the first element in the array, if it exists, and then calculate <code>rightIndex = binarySearch(A, v + 1)</code> to find the index of the next element, if it exists. The result should then be <code>rightIndex - leftIndex</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">countOccurrences</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">,</span> <span class="kt">int</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">leftIdx</span> <span class="o">=</span> <span class="n">binarySearch</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">leftIdx</span> <span class="o">==</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">||</span> <span class="n">A</span><span class="o">[</span><span class="n">leftIdx</span><span class="o">]</span> <span class="o">!=</span> <span class="n">v</span><span class="o">)</span>
+    <span class="k">return</span> <span class="n">0</span><span class="o">;</span>
+
+  <span class="kt">int</span> <span class="n">rightIdx</span> <span class="o">=</span> <span class="n">binarySearch</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">v</span><span class="o">);</span>
+
+  <span class="k">return</span> <span class="n">rightIdx</span> <span class="o">-</span> <span class="n">leftIdx</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div><p>Do note we could alternatively have defined <code>binarySearch(A, v, start, end)</code>, such that the call to calculate the first index would go like</p>
+<pre><code>leftIndex = binarySearch(A, v, 0, A.length - 1)
+</code></pre>
+<p>and for the right index</p>
+<pre><code>rightIndex = binarySearch(A, v + 1, leftIndex + 1, end)
+</code></pre>
+<h2 id="building-a-balanced-binary-search-tree-out-of-a-sorted-array">Building a Balanced Binary Search Tree Out of a Sorted Array</h2>
+<p>If we&rsquo;re given a sorted array, what&rsquo;s the quickest way of creating a balanced binary search tree out of it?</p>
+<p>Well, as the diagram below exemplifies, the root node is right at the center of the interval that goes from the first to the last elements of the array. It&rsquo;s left subnode and right subnodes also sit at the middle of the intervals <code>[0, mid - 1]</code> and <code>[mid + 1, end]</code>, and so on:</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto; margin-top: 36px; margin-bottom: 36px;" width="480" src="bst-building.svg" /></p>
+<p>So a simple recursive implementation that always creates a node out of the current mid should suffice:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">Node</span> <span class="nf">createTree</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">createTree</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kd">static</span> <span class="n">Node</span> <span class="nf">createTree</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">,</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="kt">int</span> <span class="n">end</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">end</span><span class="o">)</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    
+  <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="o">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
+  
+  <span class="k">return</span> <span class="k">new</span> <span class="n">Node</span><span class="o">(</span>
+    <span class="n">A</span><span class="o">[</span><span class="n">mid</span><span class="o">],</span>
+    <span class="n">createTree</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span> <span class="n">mid</span> <span class="o">-</span> <span class="n">1</span><span class="o">),</span>
+    <span class="n">createTree</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">1</span><span class="o">,</span> <span class="n">end</span><span class="o">)</span>
+  <span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div><p>This problem can also be seen at <a href="https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/">Leetcode - Convert Sorted Array To Binary Search Tree</a>.</p>
+<h1 id="problems">Problems</h1>
+<p>Here I&rsquo;m listing some interesting applications of binary search to leetcode problems. For some of them binary search may come as the obvious technique to use, while for others, not so much.</p>
+<h2 id="first-bad-version">First Bad Version</h2>
+<p>Link: <a href="https://leetcode.com/problems/first-bad-version">First Bad Version</a></p>
+<p>Binary search. If the version is bad, keep the current version as a candidate result but attempt to find a previous version that is also bad.</p>
+<h2 id="search-a-2d-matrix">Search a 2D Matrix</h2>
+<p>Link: <a href="https://leetcode.com/problems/search-a-2d-matrix/">Search a 2D Matrix</a></p>
+<p>At first sight, we may be tempted to solve it with two <code>binarySearch()</code> methods: one that searches over rows and another one searching over columns. But we can avoid all of that if we instead think of this 2D array as a single 1D array, making use of the fact that we know that the last element of row <code>R</code> is always smaller than the first element of row <code>R + 1</code>. Then it all just turns into a matter of converting indexes from the 1D to the 2D array back and forth while binary searching.</p>
+<h2 id="sqrtx">Sqrt(x)</h2>
+<p>Link: <a href="https://leetcode.com/problems/sqrtx/">Sqrt(x)</a></p>
+<p>There are for sure more efficient ways to calculate the square root of a number, but binary search can also help us here if we&rsquo;re don&rsquo;t know any better.</p>
+<p>Gist of the algorithm: we know that the square root of a number <code>k</code> must be a number between <code>1</code> and <code>k</code>, so we can binary search over that interval, finding a result in <code>O(lg n)</code> time.</p>
+<h2 id="minimum-number-of-days-to-make-m-bouquets">Minimum Number of Days to Make m Bouquets</h2>
+<p>Link: <a href="https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets">Minimum Number of Days to Make m Bouquets</a></p>
+<p>We want to guess what&rsquo;s the minimum number of days containing enough sequences of already blossomed flowers to create the needed amount of bouquets. Checking whether at a given day there are enough adjacent flowers to create all the needed bouquets can be calculated in <code>O(n)</code>, so we just need to binary search over the possible range of days (minimum and maximum days that a flower can blossom). The end solution will comfortably run in <code>O(n lg n)</code>.</p>
+<h2 id="koko-eating-bananas">Koko Eating Bananas</h2>
+<p>Link: <a href="https://leetcode.com/problems/koko-eating-bananas">Koko Eating Bananas</a>.</p>
+<p>A problem that can be solved similarly to <code>Minimum Number of Days to Make M Bouquets</code>.</p>]]></content>
+		</item>
+		
+	</channel>
+</rss>
