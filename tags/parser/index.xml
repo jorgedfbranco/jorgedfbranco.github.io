@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>parser on Jorge Branco&#39;s Tech Blog</title>
-    <link>https://github.io/jorgedfbranco/tags/parser/</link>
+    <link>https://jorgedfbranco.github.io/tags/parser/</link>
     <description>Recent content in parser on Jorge Branco&#39;s Tech Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Tue, 03 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://github.io/jorgedfbranco/tags/parser/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 03 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/tags/parser/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
-      <link>https://github.io/jorgedfbranco/posts/writing-a-recursive-descent-parser/</link>
+      <link>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</link>
       <pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://github.io/jorgedfbranco/posts/writing-a-recursive-descent-parser/</guid>
+      <guid>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</guid>
       <description>&lt;p&gt;Let&amp;rsquo;s consider the problem of implementing a function &lt;code&gt;evalExpr(str): double&lt;/code&gt; that, given an arbitrary well-formed mathematical expression, calculates its value.&lt;/p&gt;
 &lt;p&gt;Examples of such calls and their respective return values would be:&lt;/p&gt;
 &lt;ul&gt;
