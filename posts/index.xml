@@ -288,11 +288,11 @@ Term -&gt; '(' Expr ')'
    | ('|(' | '&amp;(') A (',' A)*) ')'
    | ('t' | 'f')
 </code></pre><h2 id="basic-calculator-i-ii--iii">Basic Calculator I, II &amp; III</h2>
-<p>Link: <a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a></p>
+<h3 id="httpsleetcodecomproblemsbasic-calculatorhttpsleetcodecomproblemsbasic-calculator"><a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a></h3>
 <p>This problem requires a simpler grammar to the one developed in this article, as it only needs to support additions or subtractions. Our grammar would work as well, though.</p>
-<p><a href="https://leetcode.com/problems/basic-calculator-ii">https://leetcode.com/problems/basic-calculator-ii/</a></p>
-<p>Requires the very same grammar we developed in this article.</p>
-<p><a href="https://leetcode.com/problems/basic-calculator-iii">https://leetcode.com/problems/basic-calculator-iii/</a></p>
+<h3 id="httpsleetcodecomproblemsbasic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii"><a href="https://leetcode.com/problems/basic-calculator-ii">https://leetcode.com/problems/basic-calculator-ii/</a></h3>
+<p>We can use the very same grammar we developed in this article.</p>
+<h3 id="httpsleetcodecomproblemsbasic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii"><a href="https://leetcode.com/problems/basic-calculator-iii">https://leetcode.com/problems/basic-calculator-iii/</a></h3>
 <p>Another rehash of <code>Basic Calculator II</code> as far as I understand it.</p>
 ]]></content>
 		</item>

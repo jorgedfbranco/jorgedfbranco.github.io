@@ -12,7 +12,7 @@
 Examples of such calls and their respective return values would be:
  evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1.5. evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language."><meta itemprop="datePublished" content="2021-08-03T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2021-08-03T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1710">
+<meta itemprop="wordCount" content="1711">
 <meta itemprop="keywords" content="java,algorithms,parser,recursive-descent,compilers," /><meta property="og:title" content="Writing an Expression Evaluator with Recursive-Descent Parsing" />
 <meta property="og:description" content="Let&rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
 Examples of such calls and their respective return values would be:
@@ -341,11 +341,11 @@ Term -&gt; '(' Expr ')'
    | ('|(' | '&amp;(') A (',' A)*) ')'
    | ('t' | 'f')
 </code></pre><h2 id="basic-calculator-i-ii--iii">Basic Calculator I, II &amp; III<a href="#basic-calculator-i-ii--iii" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<p>Link: <a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a></p>
+<h3 id="httpsleetcodecomproblemsbasic-calculatorhttpsleetcodecomproblemsbasic-calculator"><a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a><a href="#httpsleetcodecomproblemsbasic-calculatorhttpsleetcodecomproblemsbasic-calculator" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>This problem requires a simpler grammar to the one developed in this article, as it only needs to support additions or subtractions. Our grammar would work as well, though.</p>
-<p><a href="https://leetcode.com/problems/basic-calculator-ii">https://leetcode.com/problems/basic-calculator-ii/</a></p>
-<p>Requires the very same grammar we developed in this article.</p>
-<p><a href="https://leetcode.com/problems/basic-calculator-iii">https://leetcode.com/problems/basic-calculator-iii/</a></p>
+<h3 id="httpsleetcodecomproblemsbasic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii"><a href="https://leetcode.com/problems/basic-calculator-ii">https://leetcode.com/problems/basic-calculator-ii/</a><a href="#httpsleetcodecomproblemsbasic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>We can use the very same grammar we developed in this article.</p>
+<h3 id="httpsleetcodecomproblemsbasic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii"><a href="https://leetcode.com/problems/basic-calculator-iii">https://leetcode.com/problems/basic-calculator-iii/</a><a href="#httpsleetcodecomproblemsbasic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>Another rehash of <code>Basic Calculator II</code> as far as I understand it.</p>
 
 			</div>
@@ -354,7 +354,7 @@ Term -&gt; '(' Expr ')'
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://jorgedfbranco.github.io/tags/java">java</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/algorithms">algorithms</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/parser">parser</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/recursive-descent">recursive-descent</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/compilers">compilers</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1710 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1711 Words</p>
 
 			</footer>
 		</article>
