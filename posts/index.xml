@@ -245,7 +245,8 @@ Term -&gt; '(' Expr ')'
 <p>Grammar:</p>
 <pre><code>S -&gt; bool ('?' S ':' S)?
    | int
-</code></pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+</code></pre><p>Code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="n">String</span> <span class="nf">parseTernary</span><span class="o">(</span><span class="n">String</span> <span class="n">expression</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="k">new</span> <span class="n">TernaryParser</span><span class="o">(</span><span class="n">expression</span><span class="o">).</span><span class="na">parse</span><span class="o">();</span>
     <span class="o">}</span>
