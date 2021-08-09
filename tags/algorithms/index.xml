@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Tue, 03 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/tags/algorithms/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 08 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/tags/algorithms/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Implementing a Blocking Queue with Condition Variables</title>
+      <link>https://jorgedfbranco.github.io/posts/condition-variables-in-java/</link>
+      <pubDate>Sun, 08 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://jorgedfbranco.github.io/posts/condition-variables-in-java/</guid>
+      <description>Introduction A concurrent blocking queue is a special kind of FIFO data-structure where:
+ Calling dequeue() always returns an element, blocking the calling thread if the queue is currently empty. Only an insertion by another thread through a call to enqueue(v) will then unblock it; Calling enqueue() inserts an element in the queue. There are two variants of blocking queues: bounded and unbounded. An unbounded queue allows you to insert as many elements on it as you&amp;rsquo;d like.</description>
+    </item>
+    
     <item>
       <title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
       <link>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</link>

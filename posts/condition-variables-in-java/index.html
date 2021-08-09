@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Implementing a Blocking Queue with Condition Variables">
+<meta itemprop="description" content="Introduction A concurrent blocking queue is a special kind of FIFO data-structure where:
+ Calling dequeue() always returns an element, blocking the calling thread if the queue is currently empty. Only an insertion by another thread through a call to enqueue(v) will then unblock it; Calling enqueue() inserts an element in the queue. There are two variants of blocking queues: bounded and unbounded. An unbounded queue allows you to insert as many elements on it as you&rsquo;d like."><meta itemprop="datePublished" content="2021-08-08T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-08-08T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1930">
+<meta itemprop="keywords" content="java,algorithms,concurrency," /><meta property="og:title" content="Implementing a Blocking Queue with Condition Variables" />
+<meta property="og:description" content="Introduction A concurrent blocking queue is a special kind of FIFO data-structure where:
+ Calling dequeue() always returns an element, blocking the calling thread if the queue is currently empty. Only an insertion by another thread through a call to enqueue(v) will then unblock it; Calling enqueue() inserts an element in the queue. There are two variants of blocking queues: bounded and unbounded. An unbounded queue allows you to insert as many elements on it as you&rsquo;d like." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jorgedfbranco.github.io/posts/condition-variables-in-java/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-08-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-08-08T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Implementing a Blocking Queue with Condition Variables"/>
+<meta name="twitter:description" content="Introduction A concurrent blocking queue is a special kind of FIFO data-structure where:
+ Calling dequeue() always returns an element, blocking the calling thread if the queue is currently empty. Only an insertion by another thread through a call to enqueue(v) will then unblock it; Calling enqueue() inserts an element in the queue. There are two variants of blocking queues: bounded and unbounded. An unbounded queue allows you to insert as many elements on it as you&rsquo;d like."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Implementing a Blocking Queue with Condition Variables</title>
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.4b3d451286640b47cc594a77504e3bf060e06afc21056dc9db7b5cd260778fcd.css" integrity="sha256-Sz1FEoZkC0fMWUp3UE478GDgavwhBW3J23tc0mB3j80=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://jorgedfbranco.github.io">Jorge Branco&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/jorgedfbranco" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://linkedin.com/in/jorgedfbranco" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Aug 8, 2021</span></div>
+				<h1>Implementing a Blocking Queue with Condition Variables</h1>
+			</header>
+			<div class="content">
+				<h2 id="introduction">Introduction<a href="#introduction" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>A concurrent blocking queue is a special kind of FIFO data-structure where:</p>
+<ol>
+<li>Calling <code>dequeue()</code> always returns an element, blocking the calling thread if the queue is currently empty. Only an insertion by another thread through a call to <code>enqueue(v)</code> will then unblock it;</li>
+<li>Calling <code>enqueue()</code> inserts an element in the queue. There are two variants of blocking queues: bounded and unbounded. An unbounded queue allows you to insert as many elements on it as you&rsquo;d like. A bounded queue has a prespecified capacity, and attempting to enqueue any elements beyond that blocks the calling thread until <code>dequeue()</code> operations by other threads make up space for it.</li>
+</ol>
+<p>This is actually an instance of a very well known problem: <a href="https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem">The Producer / Consumer Problem</a>.</p>
+<p>Given this, the simplest and most naive implementation could make use of active polling to try to achieve the blocking behavior that both <code>dequeue()</code> and <code>enqueue()</code> methods require:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnboundedBlockingQueue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Deque</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayDeque</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;();</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">enqueue</span><span class="o">(</span><span class="n">T</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">data</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">T</span> <span class="nf">dequeue</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kd">synchronized</span> <span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="n">data</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+                    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>This implementation is, of course, terrible from a resource usage perspective. To avoid the constant polling, it&rsquo;d be interesting to have access to some sort of primitive allowing us to freeze any calling thread of <code>dequeue()</code> when the queue is empty, only to get unblocked when items are enqueued through any other thread.</p>
+<hr>
+<h2 id="condition-variables-in-java">Condition Variables in Java<a href="#condition-variables-in-java" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Fortunately, for this we can use <code>condition variables</code>. Condition variables are offered in Java through three methods implemented in <code>java.lang.Object</code> and that are available in any heap object instance: <code>Object.wait()</code> (and its overloads), <code>Object.notify()</code> and <code>Object.notifyAll()</code>:</p>
+<ul>
+<li><code>o.wait()</code> - Blocks (freezes) the current thread until some other thread makes a call to <code>o.notify()</code> or <code>o.notifyAll()</code>;</li>
+<li><code>o.notify()</code> - Notifies (unblocks) a thread that has been previously blocked via <code>o.wait()</code>. If no thread is currently blocked it does nothing; If multiple threads were awaiting, only one of them is woken up.</li>
+<li><code>o.notifyAll()</code> - Like <code>notify()</code>, but unblocks all currently blocked threads.</li>
+</ul>
+<p>Beware that calls to any of these three methods can only be done inside <code>synchronized</code> blocks, and can only be invoked on the same object that is currently under lock from the synchronization block.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="o">...</span>
+<span class="c1">// An example of how a call to wait() / notify() / notifyAll() should look like
+</span><span class="c1"></span><span class="kd">synchronized</span> <span class="o">(</span><span class="n">o</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// &lt;-- locking &#34;o&#34;
+</span><span class="c1"></span>    <span class="o">...</span>
+    <span class="n">o</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>  <span class="c1">// &lt;-- invoking wait() on &#34;o&#34; 
+</span><span class="c1"></span>    <span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div><p>Failure to do so will result in a runtime exception when attempting to invoke these methods.</p>
+<p>Before we move into a full-blown blocking queue implementation, let&rsquo;s delve into how condition variables are implemented at the VM level.</p>
+<hr>
+<h2 id="entry-lists-and-wait-sets"><code>Entry-List</code>s and <code>Wait-Set</code>s<a href="#entry-lists-and-wait-sets" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>Every object instance <code>o</code> in Java has an associated:</p>
+<ol>
+<li><code>entry-list</code> - a set containing the list of threads currently awaiting to acquire a lock on <code>o</code>.</li>
+<li><code>wait-set</code> - a set containing the list of threads currently waiting on a condition variable of <code>o</code>;</li>
+</ol>
+<p>Let&rsquo;s take a look into how both end up used:</p>
+<h3 id="the-locks-entry-list">The Lock&rsquo;s <code>entry list</code><a href="#the-locks-entry-list" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>When a thread <code>T</code> attempts to enter a <code>synchronized</code> block with a lock on object <code>o</code>, one of two things may happen:</p>
+<ol>
+<li>No other thread is currently holding the lock on <code>o</code>, so <code>T</code> is free to acquire it and enter the <code>synchronized</code>&lsquo;block&rsquo;s critical section. Eventually, when leaving the critical section, the lock is released;</li>
+<li>Another thread <code>T2</code> has already acquired the lock. In this case, <code>T</code> will be added to <code>o</code>&rsquo;s <code>entry-list</code> and sent to sleep. Eventually, when <code>T2</code> frees the lock, one of the threads in the <code>entry-list</code> is removed from it and allowed to acquire the lock on <code>o</code> and proceed to enter a critical section.</li>
+</ol>
+<h3 id="the-wait-set">The <code>wait-set</code><a href="#the-wait-set" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>When a thread is inside a <code>synchronized</code> block locking <code>o</code>, its code is allowed to make calls to <code>o.wait()</code>, <code>o.notify()</code> and <code>o.notifyAll()</code>.</p>
+<ol>
+<li>When thread <code>T</code> calls <code>o.wait()</code>, <code>T</code> gets added to the wait-set of <code>o</code> and the currently held lock is released, so any other thread is now free to acquire the lock.</li>
+<li>When thread <code>T</code> calls <code>o.notify()</code>, one of two things happen:
+<ol>
+<li>Either <code>o</code>&rsquo;s <code>wait-set</code> is empty and it&rsquo;s for all effects a no-op, or</li>
+<li>There is at least one thread in the <code>wait-set</code>. If that&rsquo;s the case, one of them is removed from the <code>wait-set</code> and it will immediately attempt to re-acquire the lock (getting added to the <code>entry-list</code> if the lock is already in use). Do note that on this very moment, most likely the lock is still being held by <code>T</code> &ndash; calling <code>o.notify()</code> does not release the lock.</li>
+</ol>
+</li>
+<li>When thread <code>T</code> calls <code>o.notifyAll()</code> the behavior is quite similar to 2., except that the whole <code>wait-set</code> is drained and all its reference threads will now attempt to re-aquire the lock.</li>
+</ol>
+<p>It&rsquo;s important to realize that when a previously blocked thread is removed from the <code>wait-set</code>, attempts to grab the lock and eventually acquires it, it&rsquo;s going to resume execution from the place where it left of, not from the beginning of the synchronized block:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">synchronized</span> <span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">data</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+    <span class="o">...</span> <span class="c1">// &lt;-- execution will resume from this point after data.wait() returns,
+</span><span class="c1"></span>        <span class="c1">// even though calling wait() entailed having this thread be moved to
+</span><span class="c1"></span>        <span class="c1">// a wait-set and releasing the currently held lock, eventually get
+</span><span class="c1"></span>        <span class="c1">// removed from the wait-set, moved to the monitor&#39;s entry-list, sleep
+</span><span class="c1"></span>        <span class="c1">// for a bit and then finally be awarded the lock back!
+</span><span class="c1"></span><span class="o">}</span>
+</code></pre></div><p>Before we proceed, we need to take a small detour into &ldquo;spurious wake-up calls&rdquo;:</p>
+<h3 id="spurious-wake-up-calls">Spurious Wake-Up Calls<a href="#spurious-wake-up-calls" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>Special care should be taken to always re-verify the condition that prompted a call to <code>wait()</code> as there are no guarantees that when that call returns, it originated from a corresponding <code>notify()</code> or <code>notifyAll()</code> invocation elsewhere. Modern JVM implementations will delegate part of its condition variable implementation to the operating system, and both in Windows and Linux there are known issues with possible unwarranted wakeups &ndash; &ldquo;spurious wake-up calls&rdquo; as they are known.</p>
+<p>For more information regarding the issue:</p>
+<ul>
+<li>On Windows: <a href="https://devblogs.microsoft.com/oldnewthing/20180201-00/?p=97946">Spurious wake-ups in Win32 condition variables</a>;</li>
+<li>On Linux: <a href="https://stackoverflow.com/a/1051816/130758">Do spurious wakeups in Java actually happen?</a>.</li>
+</ul>
+<p>The bottom-line is, for all purposes, that the pattern</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="k">if</span> <span class="o">(</span><span class="n">my_condition</span><span class="o">)</span>
+   <span class="n">obj</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+</code></pre></div><p>should as a general rule be substituted by</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="k">while</span> <span class="o">(</span><span class="n">my_condition</span><span class="o">)</span>
+    <span class="n">obj</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+</code></pre></div><hr>
+<h2 id="an-unbounded-blocking-queue-implementation">An Unbounded Blocking Queue Implementation<a href="#an-unbounded-blocking-queue-implementation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>With all the gathered understanding about condition variables, it&rsquo;s quite straight-forward to come up with an unbounded blocking queue implementation:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnboundedBlockingQueue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Deque</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayDeque</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="n">T</span> <span class="nf">dequeue</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">enqueue</span><span class="o">(</span><span class="n">T</span> <span class="n">v</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">data</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="n">1</span><span class="o">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="na">notify</span><span class="o">();</span> <span class="c1">// for the given example, we only need to wake up a thread 
+</span><span class="c1"></span>                               <span class="c1">// if the queue was previously empty
+</span><span class="c1"></span>        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>We can now proceed to think of the bounded case &ndash; what if the queue should also block when attempting to add an element past a given predefined capacity?</p>
+<h2 id="a-bounded-blocking-queue-implementation">A Bounded Blocking Queue Implementation<a href="#a-bounded-blocking-queue-implementation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>The situation here gets a bit more dicey, as for the first time we have two independent conditions to check for: on enqueueings we may want to block if the queue is already at max capacity and on dequeueings if the queue is currently empty. At first sight, we could easily solve this by defining two different objects that would each hold a condition variable:</p>
+<ul>
+<li><code>emptyCond</code> - to be used to block the calling thread when the queue is empty;</li>
+<li><code>fullCond</code> - to be used to block the calling thread when the queue is at capacity;</li>
+</ul>
+<p>Something ressembling:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BoundedBlockingQueue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Deque</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayDeque</span><span class="o">&lt;&gt;();</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">emptyCond</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">fullCond</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">();</span>
+
+    <span class="kd">public</span> <span class="n">T</span> <span class="nf">dequeue</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">)</span>
+                <span class="n">emptyCond</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+
+            <span class="n">T</span> <span class="n">res</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+            <span class="n">fullCond</span><span class="o">.</span><span class="na">notify</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">res</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">enqueue</span><span class="o">(</span><span class="n">T</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>But unfortunately, that won&rsquo;t really work as we&rsquo;re synchronizing over <code>data</code> while invoking <code>wait()</code> and <code>notify()</code> over <code>emptyCond</code> and <code>fullCond</code>, which throws an exception at runtime. The way to go around this is through the use of <code>notifyAll()</code> &ndash; we&rsquo;ll keep synchronizing, waiting and notifying over <code>data</code>, but when it comes time to notify, we always notify all threads in the <code>wait-set</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BoundedBlockingQueue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">capacity</span> <span class="o">=</span> <span class="n">16</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Deque</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayDeque</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">enqueue</span><span class="o">(</span><span class="n">T</span> <span class="n">v</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="n">capacity</span><span class="o">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+            <span class="n">data</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+            <span class="n">data</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">T</span> <span class="nf">dequeue</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+                <span class="n">data</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+            <span class="n">T</span> <span class="n">res</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+            <span class="n">data</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">res</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>This should guarantee us correct results, but unfortunately it&rsquo;s severely lacking when it comes to performance. Can we do better?</p>
+<h2 id="extrinsic-locks-and-condition-variables">Extrinsic Locks and Condition Variables<a href="#extrinsic-locks-and-condition-variables" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>When referring to locks and condition variables, we&rsquo;ve been so far exclusively discussing <code>intrinsic locks</code>, that is, locks provided at the syntax and language level &ndash; locks provided by the <code>synchronized</code> keyword and by calls to <code>Object.wait()</code> and <code>Object.notify()</code> and their derivatives.</p>
+<p>Java 1.5 introduced the <code>java.util.concurrent</code> package, bringing along a wealth of useful concurrency-related utilities. One of the newly introduced interfaces is <code>java.util.concurrent.locks.Lock</code>, the base interface for all new pure library-based lock implementations. As these new locks are not part of the language / virtual-machine per se, they&rsquo;re commonly referred to as <code>extrinsic locks</code>.</p>
+<p>Protecting a critical section of code with an extrinsic lock can then be done as follows:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">final</span> <span class="n">Lock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span> <span class="c1">// one of the implementation classes of Lock
+</span><span class="c1"></span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">m</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+        <span class="o">....</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>As there&rsquo;s no language support for these locks, it&rsquo;s of course up to the developer to make sure that we lock and unluck in the correct order, no matter what. The advantage of the <code>Lock</code> interface, though, is that it provides some more methods, such as <code>Lock.tryLock(): bool</code>, a method that attempts to grab the lock and if failed, immediately returns false or <code>Lock.tryLock(timeout): bool</code> that attempts to grab a lock up to a given <code>timeout</code> time, returning false if no lock could be acquired during that time window.</p>
+<p>The main advantage of using extrinsic locks, though, is that they allow you to create multiple condition variables over a single lock &ndash; it&rsquo;s as simple as calling:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Condition</span> <span class="n">emptyCond</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+<span class="n">Condition</span> <span class="n">fullCond</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+</code></pre></div><p>and making use of its <code>await()</code> and <code>signal()</code> methods:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">enqueue</span><span class="o">(</span><span class="n">T</span> <span class="n">v</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="n">capacity</span><span class="o">)</span>
+            <span class="n">fullCond</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+        <span class="n">emptyCond</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>With this in place, we have all we need to come up with a final version of our bounded blocking queue implementation:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BoundedBlockingQueue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">capacity</span> <span class="o">=</span> <span class="n">16</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Deque</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayDeque</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Lock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Condition</span> <span class="n">emptyCond</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Condition</span> <span class="n">fullCond</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">enqueue</span><span class="o">(</span><span class="n">T</span> <span class="n">v</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+            
+            <span class="k">while</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="n">capacity</span><span class="o">)</span>
+                <span class="n">fullCond</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+            
+            <span class="n">data</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="n">1</span><span class="o">)</span>
+                <span class="n">emptyCond</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">T</span> <span class="nf">dequeue</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+            
+            <span class="k">while</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>
+                <span class="n">emptyCond</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+
+            <span class="n">var</span> <span class="n">res</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="n">capacity</span> <span class="o">-</span> <span class="n">1</span><span class="o">)</span>
+                <span class="n">fullCond</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">res</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="references">References<a href="#references" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Monitor_(synchronization)">Monitor (Synchronization)</a></li>
+<li><a href="http://lass.cs.umass.edu/~shenoy/courses/fall10/lectures/Lec09_notes.pdf">CMPSCI 377 - Operating Systems, Lecture 9: Feb 18. Monitors and Condition Variables</a></li>
+<li><a href="https://pages.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf">Condition Variables</a></li>
+<li><a href="https://stackoverflow.com/questions/37026/java-notify-vs-notifyall-all-over-again">Java: notify() vs notifyAll() all over again</a></li>
+<li><a href="https://stackoverflow.com/a/1051816/130758">Do spurious wakeups in Java actually happen?</a></li>
+<li><a href="https://stackoverflow.com/a/1461956/130758">Does C# Monitor.Wait() suffer from spurious wakeups?</a></li>
+<li><a href="https://devblogs.microsoft.com/oldnewthing/20180201-00/?p=97946">Spurious wake-ups in Win32 condition variables</a></li>
+<li><a href="https://stackoverflow.com/questions/18490636/condition-give-the-effect-of-having-multiple-wait-sets-per-object">Condition give the effect of having multiple wait-sets per object?</a></li>
+</ul>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://jorgedfbranco.github.io/tags/java">java</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/algorithms">algorithms</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/concurrency">concurrency</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1930 Words</p>
+
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="prev-post" href="https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/">
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Writing an Expression Evaluator with Recursive-Descent Parsing</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2021 <a href="https://jorgedfbranco.github.io">Jorge Branco</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://jorgedfbranco.github.io/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://jorgedfbranco.github.io/js/bundle.min.c048d1b7b0dfdbf1acd4dbd8544a2443fd6da4779e066fe86af64ad37eed258a.js" integrity="sha256-wEjRt7Df2/Gs1NvYVEokQ/1tpHeeBm/oavZK037tJYo=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>
