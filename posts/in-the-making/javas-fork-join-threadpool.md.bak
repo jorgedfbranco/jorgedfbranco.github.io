@@ -1,0 +1,19 @@
++++
+title = "Java's Fork-Join Thread-Pool"
+date = "2021-08-05"
+description = ""
+tags = [ "java", "algorithms", "concurrency" ]
+draft = true
++++
+
+# TODO
+
+
+# Topics to cover
+
+* workstealing algorithm
+* recursiveaction / recursivetask
+*
+
+
+# References

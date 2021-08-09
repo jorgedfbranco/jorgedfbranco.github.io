@@ -1,0 +1,106 @@
++++
+title = "An Introduction to Monitors on the JVM"
+date = "2021-08-05"
+description = ""
+tags = [ "java", "algorithms", "concurrency" ]
+draft = true
++++
+
+The JVM has since its inception treated multi-threaded development as a first-class concern. 
+
+The most important concurrency features of the language / runtime being:
+
+* Marking fields as `volatile` to guarantee visibility of updates across threads;
+* Wrapping critical sections of code in `synchronized` blocks, guaranteeing mutual exclusion when concurrent threads attempt to simultaneously access the same resource;
+* Marking of methods as `synchronized` to mark its whole body as a critical sections.
+* `java.lang.Object` being used as condition variables through the methods:`wait()` (and its overloads), `notify()` and `notifyAll()`.
+
+
+# Extrinsic vs Intrinsic Locks
+
+A lock is said to be intrinsic if it's implemented through Java monitors, that is, if it's intrinsic to the language:
+
+```java
+private final Object obj = new Object();
+
+void m() {
+    synchronized (obj) {
+        // << critical section >>
+    }
+}
+```
+
+And that's all we had before Java 5.0 brought the new `java.lang.concurrent` package with its wealth of new functionality. Some of it was a new set of lock implementations, purely provided as library code, with no language / syntax support:
+
+```java
+private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+void m() {
+    try {
+        lock.lock();
+        // << critical section >>
+    } finally {
+        lock.unlock();
+    }
+}
+```
+
+# Mutex
+
+# Condition Variable
+
+# Monitors
+
+So, what's a monitor? A monitor is a mutex with a condition variable. All objects in Java allow you to use them both as a mutex (when you synchronize over them) and as condition variable (when you use )
+
+
+
+# Intrinsic Condition Variables
+
+Now that we've covered how mutual exclusion works in Java, we will delve into another important primitive of concurrent programming: condition variables.
+
+Condition variables allow threads to communicate with each other through signals -- a thread may mark itself as awaiting for a given event (or condition) to happen, and may later be unblocked by another one. Java's initial support for conditional variables came in the form of three methods made available on every object: `wait()` (multiple overloads), `notify()` and `notifyAll()`.
+
+{{< highlight java "linenos=true">}}
+class PriorityQueue<E> {
+    private final ArrayDeque<E> data = new ArrayDeque<>();
+
+    public void enqueue(E element) {
+        synchronized (data) {
+            data.addFirst(element);
+            data.notify();
+        }
+    }
+
+    public E dequeue() throws InterruptedException {
+        synchronized (data) {
+            while (data.isEmpty())
+                data.wait();
+            var result = data.removeLast();
+            return result;
+        }
+    }
+}
+{{< / highlight >}}
+
+# Extrinsic Locks & Condition Variables
+
+* TODO: revisit the blocking queue implementation to make use of reentrantreadwritelock
+
+# Topics to cover
+
+* A monitor is a mutex + condition variables, ie, "a monitor is a synchronization construct that allows threads to have both mutual exclusion and the ability to wait (block) for a certain condition to become false. Monitors also have a mechanism for signaling other threads that their condition has been met. " (wiki)
+
+* monitorenter / monitorexit
+* synchronized on variables / methods
+  * static / instance variable
+* wait / notify / notifyall (talk about the spurius wake up calls)
+* implement a simple blockingqueue
+* how do they relate to condition variables (do they?) -> from what i can gather java monitors are mutexes + condition variables
+  * examples of usage of multiple condition variables?
+* intrinsic / extrinsic locks
+
+
+# References
+* [Monitor (Synchronization)](https://en.wikipedia.org/wiki/Monitor_(synchronization))
+* [CMPSCI 377 - Operating Systems, Lecture 9: Feb 18. Monitors and Condition Variables](http://lass.cs.umass.edu/~shenoy/courses/fall10/lectures/Lec09_notes.pdf)

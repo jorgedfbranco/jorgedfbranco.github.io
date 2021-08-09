@@ -1,0 +1,23 @@
++++
+title = "Java's Concurrent Mark & Sweep Garbage Collector"
+date = "2021-08-04"
+description = ""
+tags = [ "java", "algorithms", "garbage-collection" ]
+draft = true
++++
+
+# TODO
+
+
+# Topics to cover
+
+* talk about of object headers
+* taxonomy -> concurrent, parallel, generational
+* young generation contains the nursery (is that how we call it?), i think it's called eden, plus two survivor spaces s0 and s1
+* if objects are moved to a survivor space theyll have an associated age (where is it stored? in the obj header?), only after surviving a number k of generations it will be permanently moved to the old gen
+* huge objects may be moved directly to the old gen, btw
+* In fact, 3 different algorithms involved: copy-collector, concurrent mark and sweep and compactor
+* bitcards (is that how they're called?) say which regions of the old generation may contain pointers to the new generation
+* talk of TLABs (is it that important for us?)
+* go over which operations kick in full pauses
+* maybe say that what you see in visualvm as "full collection" is actually a compaction
