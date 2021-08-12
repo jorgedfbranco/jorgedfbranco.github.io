@@ -7,7 +7,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 08 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Implementing a Scheduler in Java</title>
+      <link>https://jorgedfbranco.github.io/posts/implementing-a-scheduler-in-java/</link>
+      <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://jorgedfbranco.github.io/posts/implementing-a-scheduler-in-java/</guid>
+      <description>Introduction The goal of this articleo is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
+interface Scheduler { public void schedule(LocalDateTime startTime, Runnable runnable); public void schedulePeriodic(LocalDateTime startTime, Duration frequency, Runnable runnable); } There are two possible strategies to design such a scheduler:
+  Using condition variables - We store submitted tasks in a tasks priority queue, where tasks are ordered by their schedule date.</description>
+    </item>
+    
     <item>
       <title>Implementing a Blocking Queue with Condition Variables</title>
       <link>https://jorgedfbranco.github.io/posts/condition-variables-in-java/</link>

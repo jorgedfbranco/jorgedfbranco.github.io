@@ -1,0 +1,17 @@
++++
+title = "Biased Locking on the JVM"
+date = "2021-08-09"
+description = ""
+tags = [ "java", "algorithms", "concurrency" ]
+draft = true
++++
+
+
+## References
+* [Fine-grained Adaptive Biased Locking](http://www.filpizlo.com/papers/pizlo-pppj2011-fable.pdf)
+* [Biased Locking in HotSpot](https://blogs.oracle.com/dave/biased-locking-in-hotspot)
+* [Evaluating and improving biased locking in the HotSpot virtual machine](http://www.diva-portal.org/smash/get/diva2:754541/FULLTEXT01.pdf)
+* [JEP 374: Disable and Deprecate Biased Locking](https://openjdk.java.net/jeps/374)
+* [Eliminating Synchronization-Related Atomic Operations with Biased Locking and Bulk Rebiasing](https://www.oracle.com/technetwork/java/biasedlocking-oopsla2006-wp-149958.pdf)
+* [Simple and Fast Biased Locks](http://www.cs.columbia.edu/~naliniv/papers/2010-pact-locks.pdf)
+* [Quickly Reacquirable Locks](https://www.researchgate.net/publication/228852451_Quickly_Reacquirable_Locks)

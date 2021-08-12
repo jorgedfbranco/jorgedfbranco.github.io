@@ -1,0 +1,37 @@
++++
+title = "Theoretical Foundations of Garbage Collection"
+date = "2021-08-09"
+description = ""
+tags = [ "java", "algorithms", "garbage-collectors" ]
+draft = true
++++
+
+Or in other words, _"what's the least amount of knowledge I need to know in order to be able to read and understand the current literature on GCs?"_
+
+Topics:
+
+* reference counter vs marking/tracing
+* conservative GC
+* generational GC
+* regionalized
+* parallel
+* concurrent
+* incremental
+
+* TLABs
+* compaction
+
+* safepoints
+* barriers
+
+* object headers
+
+* card tables
+
+types of collectors:
+* compacting
+* copying
+* mark and sweep (?)
+* <isnt there another one?>
+
+* mutator / collector threads 
