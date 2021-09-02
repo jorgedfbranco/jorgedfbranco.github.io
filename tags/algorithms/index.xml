@@ -21,20 +21,20 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
     
     <item>
       <title>Implementing a Blocking Queue with Condition Variables</title>
-      <link>https://jorgedfbranco.github.io/posts/condition-variables-in-java/</link>
+      <link>https://jorgedfbranco.github.io/posts/implementing-a-blocking-queue-with-condition-variables-in-java/</link>
       <pubDate>Sun, 08 Aug 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://jorgedfbranco.github.io/posts/condition-variables-in-java/</guid>
-      <description>Introduction A concurrent blocking queue is a special kind of FIFO data-structure where:
+      <guid>https://jorgedfbranco.github.io/posts/implementing-a-blocking-queue-with-condition-variables-in-java/</guid>
+      <description>A concurrent blocking queue is a special kind of FIFO data-structure where:
  Calling dequeue() always returns an element, blocking the calling thread if the queue is currently empty. Only an insertion by another thread through a call to enqueue(v) will then unblock it; Calling enqueue() inserts an element in the queue. There are two variants of blocking queues: bounded and unbounded. An unbounded queue allows you to insert as many elements on it as you&amp;rsquo;d like.</description>
     </item>
     
     <item>
       <title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
-      <link>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</link>
+      <link>https://jorgedfbranco.github.io/posts/writing-an-expression-evaluator-with-recursive-descent-parsing/</link>
       <pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</guid>
+      <guid>https://jorgedfbranco.github.io/posts/writing-an-expression-evaluator-with-recursive-descent-parsing/</guid>
       <description>Let&amp;rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
 Examples of such calls and their respective return values would be:
  evalExpr(&amp;quot;1 + 2 * 3 / 4 - 1&amp;quot;) = 1.5. evalExpr(&amp;quot;1 * (2 + 3)&amp;quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&amp;rsquo;s Shunting-yard algorithm, but in this article we&amp;rsquo;re going to focus on solving it with a recursive-descent parser, as it&amp;rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.</description>

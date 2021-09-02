@@ -10,10 +10,10 @@
     <lastBuildDate>Tue, 03 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/tags/recursive-descent/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
-      <link>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</link>
+      <link>https://jorgedfbranco.github.io/posts/writing-an-expression-evaluator-with-recursive-descent-parsing/</link>
       <pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/</guid>
+      <guid>https://jorgedfbranco.github.io/posts/writing-an-expression-evaluator-with-recursive-descent-parsing/</guid>
       <description>Let&amp;rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
 Examples of such calls and their respective return values would be:
  evalExpr(&amp;quot;1 + 2 * 3 / 4 - 1&amp;quot;) = 1.5. evalExpr(&amp;quot;1 * (2 + 3)&amp;quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&amp;rsquo;s Shunting-yard algorithm, but in this article we&amp;rsquo;re going to focus on solving it with a recursive-descent parser, as it&amp;rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.</description>

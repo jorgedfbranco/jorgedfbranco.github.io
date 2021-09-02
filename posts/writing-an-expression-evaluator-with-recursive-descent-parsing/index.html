@@ -18,7 +18,7 @@ Examples of such calls and their respective return values would be:
 Examples of such calls and their respective return values would be:
  evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1.5. evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://jorgedfbranco.github.io/posts/writing-a-recursive-descent-parser/" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://jorgedfbranco.github.io/posts/writing-an-expression-evaluator-with-recursive-descent-parsing/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-08-03T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-08-03T00:00:00+00:00" />
 
@@ -36,7 +36,7 @@ Examples of such calls and their respective return values would be:
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
-	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.8d6c6cf08b6365d0846f1caba904797bd369a2a64306367ffadcb6107afaea32.css" integrity="sha256-jWxs8ItjZdCEbxyrqQR5e9NpoqZDBjZ/+ty2EHr66jI=" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.d3733a4eb735a1939cad816eb1b7b5befc67c0da78ab306115b95f869c2ce7a7.css" integrity="sha256-03M6Trc1oZOcrYFusbe1vvxnwNp4qzBhFblfhpws56c=" crossorigin="anonymous">
 	
 </head>
 
@@ -360,7 +360,7 @@ Term -&gt; '(' Expr ')'
 			</footer>
 		</article>
 		<div class="post-nav thin">
-			<a class="next-post" href="https://jorgedfbranco.github.io/posts/condition-variables-in-java/">
+			<a class="next-post" href="https://jorgedfbranco.github.io/posts/implementing-a-blocking-queue-with-condition-variables-in-java/">
 				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>Implementing a Blocking Queue with Condition Variables</span>
 			</a>
 			<a class="prev-post" href="https://jorgedfbranco.github.io/posts/an-introduction-to-binary-search/">
