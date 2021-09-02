@@ -15,11 +15,11 @@
 			<pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
 			
 			<guid>https://jorgedfbranco.github.io/posts/implementing-a-scheduler-in-java/</guid>
-			<description>Introduction The goal of this articleo is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
+			<description>Introduction The goal of this article is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
 interface Scheduler { public void schedule(LocalDateTime startTime, Runnable runnable); public void schedulePeriodic(LocalDateTime startTime, Duration frequency, Runnable runnable); } There are two possible strategies to design such a scheduler:
   Using condition variables - We store submitted tasks in a tasks priority queue, where tasks are ordered by their schedule date.</description>
 			<content type="html"><![CDATA[<h1 id="introduction">Introduction</h1>
-<p>The goal of this articleo is to implement a simple <code>Scheduler</code> class, allowing us to both schedule tasks (<code>Runnable</code> instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:</p>
+<p>The goal of this article is to implement a simple <code>Scheduler</code> class, allowing us to both schedule tasks (<code>Runnable</code> instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">interface</span> <span class="nc">Scheduler</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedule</span><span class="o">(</span><span class="n">LocalDateTime</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">Runnable</span> <span class="n">runnable</span><span class="o">);</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedulePeriodic</span><span class="o">(</span><span class="n">LocalDateTime</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">Duration</span> <span class="n">frequency</span><span class="o">,</span> <span class="n">Runnable</span> <span class="n">runnable</span><span class="o">);</span>

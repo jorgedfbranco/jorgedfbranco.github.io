@@ -8,13 +8,13 @@
 	<meta name="theme-color" content="#494f5c">
 	<meta name="msapplication-TileColor" content="#494f5c">
 <meta itemprop="name" content="Implementing a Scheduler in Java">
-<meta itemprop="description" content="Introduction The goal of this articleo is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
+<meta itemprop="description" content="Introduction The goal of this article is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
 interface Scheduler { public void schedule(LocalDateTime startTime, Runnable runnable); public void schedulePeriodic(LocalDateTime startTime, Duration frequency, Runnable runnable); } There are two possible strategies to design such a scheduler:
   Using condition variables - We store submitted tasks in a tasks priority queue, where tasks are ordered by their schedule date."><meta itemprop="datePublished" content="2021-08-11T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2021-08-11T00:00:00+00:00" />
 <meta itemprop="wordCount" content="1095">
 <meta itemprop="keywords" content="java,algorithms,concurrency," /><meta property="og:title" content="Implementing a Scheduler in Java" />
-<meta property="og:description" content="Introduction The goal of this articleo is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
+<meta property="og:description" content="Introduction The goal of this article is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
 interface Scheduler { public void schedule(LocalDateTime startTime, Runnable runnable); public void schedulePeriodic(LocalDateTime startTime, Duration frequency, Runnable runnable); } There are two possible strategies to design such a scheduler:
   Using condition variables - We store submitted tasks in a tasks priority queue, where tasks are ordered by their schedule date." />
 <meta property="og:type" content="article" />
@@ -24,7 +24,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Implementing a Scheduler in Java"/>
-<meta name="twitter:description" content="Introduction The goal of this articleo is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
+<meta name="twitter:description" content="Introduction The goal of this article is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
 interface Scheduler { public void schedule(LocalDateTime startTime, Runnable runnable); public void schedulePeriodic(LocalDateTime startTime, Duration frequency, Runnable runnable); } There are two possible strategies to design such a scheduler:
   Using condition variables - We store submitted tasks in a tasks priority queue, where tasks are ordered by their schedule date."/>
 
@@ -36,7 +36,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>Implementing a Scheduler in Java</title>
-	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.4b3d451286640b47cc594a77504e3bf060e06afc21056dc9db7b5cd260778fcd.css" integrity="sha256-Sz1FEoZkC0fMWUp3UE478GDgavwhBW3J23tc0mB3j80=" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.8d6c6cf08b6365d0846f1caba904797bd369a2a64306367ffadcb6107afaea32.css" integrity="sha256-jWxs8ItjZdCEbxyrqQR5e9NpoqZDBjZ/+ty2EHr66jI=" crossorigin="anonymous">
 	
 </head>
 
@@ -72,7 +72,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 			</header>
 			<div class="content">
 				<h1 id="introduction">Introduction<a href="#introduction" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
-<p>The goal of this articleo is to implement a simple <code>Scheduler</code> class, allowing us to both schedule tasks (<code>Runnable</code> instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:</p>
+<p>The goal of this article is to implement a simple <code>Scheduler</code> class, allowing us to both schedule tasks (<code>Runnable</code> instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">interface</span> <span class="nc">Scheduler</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedule</span><span class="o">(</span><span class="n">LocalDateTime</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">Runnable</span> <span class="n">runnable</span><span class="o">);</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedulePeriodic</span><span class="o">(</span><span class="n">LocalDateTime</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">Duration</span> <span class="n">frequency</span><span class="o">,</span> <span class="n">Runnable</span> <span class="n">runnable</span><span class="o">);</span>
