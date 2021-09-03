@@ -33,7 +33,7 @@ Binary search allows us to quickly &ndash; in O(lg n) time &ndash; find the inde
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>An Introduction to Binary Search</title>
-	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.a32f64f3f0be86ae2a82123c81b39aba21d74ff2f432053592106a3c0b5b2dca.css" integrity="sha256-oy9k8/C+hq4qghI8gbOauiHXT/L0MgU1khBqPAtbLco=" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.23379fc84abe92931594450549eaf9491ef5b673dd8103ed1e3f30715420826c.css" integrity="sha256-IzefyEq+kpMVlEUFSer5SR71tnPdgQPtHj8wcVQggmw=" crossorigin="anonymous">
 	
 </head>
 
@@ -153,8 +153,8 @@ Binary search allows us to quickly &ndash; in O(lg n) time &ndash; find the inde
 </code></pre>
 <h3 id="building-a-balanced-binary-search-tree-out-of-a-sorted-array">Building a Balanced Binary Search Tree Out of a Sorted Array<a href="#building-a-balanced-binary-search-tree-out-of-a-sorted-array" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>If we&rsquo;re given a sorted array, what&rsquo;s the quickest way of creating a balanced binary search tree out of it?</p>
-<p>Well, as the diagram below exemplifies, the root node is right at the center of the interval that goes from the first to the last elements of the array. It&rsquo;s left subnode and right subnodes also sit at the middle of the intervals <code>[0, mid - 1]</code> and <code>[mid + 1, end]</code>, and so on:</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto; margin-top: 36px; margin-bottom: 36px;" width="480" src="bst-building.svg" /></p>
+<p>Well, as the diagram below exemplifies, the root node is right at the center of the interval that goes from the first to the last elements of the array. Its left subnode and right subnodes also sit at the middle of the intervals <code>[0, mid - 1]</code> and <code>[mid + 1, end]</code>, and so on:</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto; margin-top: 36px; margin-bottom: 36px;" width="800" src="bst-building2.svg" /></p>
 <p>So a simple recursive implementation that always creates a node out of the current mid should suffice:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">Node</span> <span class="nf">createTree</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">A</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">return</span> <span class="n">createTree</span><span class="o">(</span><span class="n">A</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">A</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">);</span>

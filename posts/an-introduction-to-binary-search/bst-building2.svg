@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 441 281" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g>
+        <circle cx="220.5" cy="80.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="215px" y="88.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">5</text>
+    </g>
+    <path d="M126.885,131.5L118.5,131.5L123.531,124.792C122.693,127.307 124.37,130.661 126.885,131.5Z" style="fill:rgb(232,238,242);"/>
+    <path d="M202.5,89.5C202.5,89.5 142.388,119.556 123.867,128.817" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M320.262,121.065L325.638,127.5L317.264,127.939C319.732,126.97 321.231,123.533 320.262,121.065Z" style="fill:rgb(232,238,242);"/>
+    <path d="M238.5,89.5C238.5,89.5 301.003,116.757 320.138,125.102" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <g>
+        <circle cx="100.5" cy="140.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="95px" y="148.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">2</text>
+    </g>
+    <g>
+        <circle cx="20.5" cy="200.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="15px" y="208.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">0</text>
+    </g>
+    <g>
+        <circle cx="340.5" cy="140.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="335px" y="148.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">8</text>
+    </g>
+    <g>
+        <rect x="0.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="15px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">0</text>
+    </g>
+    <g>
+        <rect x="40.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="55px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">1</text>
+    </g>
+    <g>
+        <rect x="80.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="95px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">2</text>
+    </g>
+    <g>
+        <rect x="120.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="135px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">3</text>
+    </g>
+    <g>
+        <rect x="160.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="175px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">4</text>
+    </g>
+    <g>
+        <rect x="200.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="215px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">5</text>
+    </g>
+    <g>
+        <rect x="240.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="255px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">6</text>
+    </g>
+    <g>
+        <rect x="280.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="295px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">7</text>
+    </g>
+    <g>
+        <rect x="320.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="335px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">8</text>
+    </g>
+    <g>
+        <rect x="360.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="375px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">9</text>
+    </g>
+    <g>
+        <rect x="400.5" y="0.5" width="40" height="40" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="409.5px" y="28.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">10</text>
+    </g>
+    <g>
+        <circle cx="60.5" cy="260.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="55px" y="268.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">1</text>
+    </g>
+    <g>
+        <circle cx="140.5" cy="200.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="135px" y="208.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">3</text>
+    </g>
+    <g>
+        <circle cx="180.5" cy="260.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="175px" y="268.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">4</text>
+    </g>
+    <g>
+        <circle cx="260.5" cy="200.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="255px" y="208.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">6</text>
+    </g>
+    <g>
+        <circle cx="300.5" cy="260.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="295px" y="268.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">7</text>
+    </g>
+    <g>
+        <circle cx="380.5" cy="200.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="375px" y="208.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">9</text>
+    </g>
+    <g>
+        <circle cx="420.5" cy="260.5" r="20" style="fill:rgb(44,62,80);stroke:rgb(232,238,242);stroke-width:1px;"/>
+        <text x="409.5px" y="268.455px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:22px;fill:rgb(232,238,242);">10</text>
+    </g>
+    <path d="M20.5,180.5L20.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M59.784,240.5L59.784,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M44.748,187.001L36.498,188.501L40.248,181.001C39.873,183.626 42.123,186.626 44.748,187.001Z" style="fill:rgb(232,238,242);"/>
+    <path d="M84.5,152.5C84.5,152.5 53.455,175.784 41.298,184.901" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M100.5,120.5L100.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M140.5,180.5L140.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M180.5,240.5L180.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M220.5,60.5L220.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M260.5,180.5L260.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M300.5,240.5L300.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M340.5,120.5L340.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M380.5,180L380.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M420.5,240.5L420.5,40.5" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;stroke-dasharray:5,5,0,0;"/>
+    <path d="M284.777,186.158L276.5,187.5L280.392,180.073C279.967,182.69 282.16,185.733 284.777,186.158Z" style="fill:rgb(232,238,242);"/>
+    <path d="M325.069,152.5C325.069,152.5 293.676,175.122 281.368,183.992" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M373.256,173.118L373.5,181.5L366.649,176.666C369.187,177.431 372.491,175.657 373.256,173.118Z" style="fill:rgb(232,238,242);"/>
+    <path d="M357.931,152.5C357.931,152.5 366.171,167.849 370.662,176.214" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M408.041,236.618L408.284,245L401.433,240.166C403.972,240.931 407.276,239.157 408.041,236.618Z" style="fill:rgb(232,238,242);"/>
+    <path d="M392.716,216C392.716,216 400.956,231.349 405.446,239.714" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M50.741,234.149L51.5,242.5L44.364,238.097C46.945,238.704 50.133,236.73 50.741,234.149Z" style="fill:rgb(232,238,242);"/>
+    <path d="M34.784,215.5C34.784,215.5 43.497,229.573 48.342,237.399" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M286.456,237.149L287.216,245.5L280.079,241.097C282.66,241.704 285.849,239.73 286.456,237.149Z" style="fill:rgb(232,238,242);"/>
+    <path d="M270.5,218.5C270.5,218.5 279.212,232.573 284.057,240.399" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M128.46,175.679L129.5,184L122.22,179.84L127.42,180.88L128.46,175.679Z" style="fill:rgb(232,238,242);"/>
+    <path d="M111.5,157C111.5,157 122.683,173.775 127.42,180.88" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M169.46,235.679L170.5,244L163.22,239.84L168.42,240.88L169.46,235.679Z" style="fill:rgb(232,238,242);"/>
+    <path d="M152.5,217C152.5,217 163.683,233.775 168.42,240.88" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+</svg>
