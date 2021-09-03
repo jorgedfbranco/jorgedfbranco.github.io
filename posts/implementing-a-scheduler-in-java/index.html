@@ -36,7 +36,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>Implementing a Scheduler in Java</title>
-	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.d3733a4eb735a1939cad816eb1b7b5befc67c0da78ab306115b95f869c2ce7a7.css" integrity="sha256-03M6Trc1oZOcrYFusbe1vvxnwNp4qzBhFblfhpws56c=" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.e383b9970eedc67b1bdbfd06471934f378ca119f2deaea63f710aabc306f6c56.css" integrity="sha256-44O5lw7txnsb2/0GRxk083jKEZ8t6upj9xCqvDBvbFY=" crossorigin="anonymous">
 	
 </head>
 
@@ -46,7 +46,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 		<div class="hdr-wrapper section-inner">
 			<div class="hdr-left">
 				<div class="site-branding">
-					<a href="https://jorgedfbranco.github.io">Jorge Branco&#39;s Blog</a>
+					<a style="font-weight: 400;" href="https://jorgedfbranco.github.io">Jorge Branco&#39;s Blog</a>
 				</div>
 				<nav class="site-nav hide-in-mobile">
 					
@@ -71,7 +71,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 				<h1>Implementing a Scheduler in Java</h1>
 			</header>
 			<div class="content">
-				<h1 id="introduction">Introduction<a href="#introduction" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+				<h2 id="introduction">Introduction<a href="#introduction" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>The goal of this article is to implement a simple <code>Scheduler</code> class, allowing us to both schedule tasks (<code>Runnable</code> instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">interface</span> <span class="nc">Scheduler</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedule</span><span class="o">(</span><span class="n">LocalDateTime</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">Runnable</span> <span class="n">runnable</span><span class="o">);</span>
@@ -86,7 +86,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 <p>Use a &ldquo;Hashed Wheel Timer&rdquo; - We store the submitted tasks in a <code>tasks</code> priority queue, where tasks are ordered by their schedule date. A scheduling thread is permanently kept running, and it&rsquo;s awakened every, let&rsquo;s say, 100ms. It then checks for all the tasks that are scheduled for any date up to <code>now() + 100ms</code>. It drains them from the queue, executes them, and then goes back to sleep for the next 100ms. The process is repeated ad eternum. This is, on the other hand, the approach followed by <a href="https://github.com/akka/akka/blob/master/akka-actor/src/main/scala/akka/actor/LightArrayRevolverScheduler.scala">Akka&rsquo;s scheduler</a> and by <a href="https://docs.jboss.org/netty/3.1/api/org/jboss/netty/util/HashedWheelTimer.html">netty&rsquo;s scheduler</a>.</p>
 </li>
 </ol>
-<h1 id="implementation">Implementation<a href="#implementation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<h2 id="implementation">Implementation<a href="#implementation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>In this article, we&rsquo;re going down route #1, although approach #2 is most likely easier to implement..</p>
 <p>As described, the crux of the algorithm is a priority queue of <code>Task</code>s that need to be ordered by their scheduled <code>startTime</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Scheduler</span> <span class="o">{</span>
@@ -105,7 +105,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div><p>We then need to ask ourselves the following question:</p>
-<h1 id="should-tasks-run-on-the-scheduling-thread">Should tasks run on the scheduling thread?<a href="#should-tasks-run-on-the-scheduling-thread" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+<h2 id="should-tasks-run-on-the-scheduling-thread">Should tasks run on the scheduling thread?<a href="#should-tasks-run-on-the-scheduling-thread" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>The scheduler itself will always need to run on a thread of its own, but when the time comes to finally run a given task, we may either run it directly on the scheduling thread or spawn it on a new thread, or in a thread belonging to a thread-pool.</p>
 <p>Running arbitrary tasks on the scheduling thread is risky, as there are no guarantees that the task is going to run quick, or even that will ever terminate &ndash; and that puts the whole scheduler in jeopardy.</p>
 <p>For that reason, all schedulers will in general spawn their tasks in alternate threads. Our scheduler will take an already existing <code>ExecutorService</code> in its constructor and will execute all its tasks on it.</p>
@@ -117,7 +117,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
         <span class="k">this</span><span class="o">.</span><span class="na">executorService</span> <span class="o">=</span> <span class="n">executorService</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h1 id="scheduling-thread-creation">Scheduling Thread Creation<a href="#scheduling-thread-creation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+</code></pre></div><h2 id="scheduling-thread-creation">Scheduling Thread Creation<a href="#scheduling-thread-creation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>There are two times when the scheduling thread may be created: either eagerly when instantiating a <code>Scheduler</code> object or lazily when the first task gets submitted.</p>
 <p>From a practical perspective, a scheduling thread is only needed from the moment a task is submitted, as if it gets created before that time it&rsquo;s just going to be sleeping. It then only really needs to live until there are no further tasks to be processed. It could by that time be immediately destroyed, or it may be kept alive either indefinitely or temporarily, just in case new tasks may arrive in the near future. Destroying it too early may mean having threads being recurrently created and destroyed for no good reason, keeping it forever alive may also be a waste of resources if no new tasks end up being submitted to the scheduler.</p>
 <p>For simplicity, in this implementation the thread will be created at instantiation time.</p>
@@ -131,7 +131,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
     <span class="o">}</span>
 
     <span class="o">...</span>
-</code></pre></div><h1 id="scheduling-of-tasks">Scheduling of Tasks<a href="#scheduling-of-tasks" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+</code></pre></div><h2 id="scheduling-of-tasks">Scheduling of Tasks<a href="#scheduling-of-tasks" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>Scheduling a task entails entering a synchronize block, wrapping the given <code>Runnable</code> in a <code>Task</code> object, and in case we determine this newly created task to be the earliest task in the queue, warn the scheduling thread that it needs to update its timed wait:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">CompletionStage</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="nf">schedule</span><span class="o">(</span><span class="n">LocalDateTime</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Duration</span><span class="o">&gt;</span> <span class="n">frequency</span><span class="o">,</span> <span class="n">Runnable</span> <span class="n">runnable</span><span class="o">)</span> <span class="o">{</span>
     <span class="kd">synchronized</span> <span class="o">(</span><span class="n">schedulingThread</span><span class="o">)</span> <span class="o">{</span>
@@ -143,7 +143,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
         <span class="k">return</span> <span class="n">future</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h1 id="the-scheduling-thread">The Scheduling Thread<a href="#the-scheduling-thread" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h1>
+</code></pre></div><h2 id="the-scheduling-thread">The Scheduling Thread<a href="#the-scheduling-thread" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <p>The scheduler thread will sleep indefinitely if there are no tasks in sight. The moment one is found, a timed wait is performed. We need to be aware that there are no guarantees that the timed wait is going to be accurate &ndash; there may be jitter, there may be a long garbage-collection pause, or any it may be that the underling scheduler or clock is not that precise. We should take into consideration that when our thread wakes up there may be tasks to be processed from earlier dates. For the aforementioned reasons, the scheduling thread will most likely lag when waking up from its sleep, but it&rsquo;s also possible that it may be slightly ahead at times. This could introduce an interesting problem: the scheduler is supposed to wake up at <code>t</code> but wakes up at <code>t - 1ms</code> &ndash; what should it do now? To better deal with those situations, we may introduce a <code>milliResolution</code> parameter, that will help us define what we consider to be &ldquo;now&rdquo;. If <code>milliResolution = 2ms</code>, any task in the interval <code>[t, t + 2ms]</code> will be considered as now, and tasks in that interval will be processed immediately.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">final</span> <span class="n">Thread</span> <span class="n">schedulingThread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">this</span><span class="o">::</span><span class="n">scheduler</span><span class="o">);</span>
 

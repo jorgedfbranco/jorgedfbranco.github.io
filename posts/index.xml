@@ -18,7 +18,7 @@
 			<description>Introduction The goal of this article is to implement a simple Scheduler class, allowing us to both schedule tasks (Runnable instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:
 interface Scheduler { public void schedule(LocalDateTime startTime, Runnable runnable); public void schedulePeriodic(LocalDateTime startTime, Duration frequency, Runnable runnable); } There are two possible strategies to design such a scheduler:
   Using condition variables - We store submitted tasks in a tasks priority queue, where tasks are ordered by their schedule date.</description>
-			<content type="html"><![CDATA[<h1 id="introduction">Introduction</h1>
+			<content type="html"><![CDATA[<h2 id="introduction">Introduction</h2>
 <p>The goal of this article is to implement a simple <code>Scheduler</code> class, allowing us to both schedule tasks (<code>Runnable</code> instances) that are only to be run once, as well as tasks that can be run repeatedly at a given frequency:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">interface</span> <span class="nc">Scheduler</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedule</span><span class="o">(</span><span class="n">LocalDateTime</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">Runnable</span> <span class="n">runnable</span><span class="o">);</span>
@@ -33,7 +33,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 <p>Use a &ldquo;Hashed Wheel Timer&rdquo; - We store the submitted tasks in a <code>tasks</code> priority queue, where tasks are ordered by their schedule date. A scheduling thread is permanently kept running, and it&rsquo;s awakened every, let&rsquo;s say, 100ms. It then checks for all the tasks that are scheduled for any date up to <code>now() + 100ms</code>. It drains them from the queue, executes them, and then goes back to sleep for the next 100ms. The process is repeated ad eternum. This is, on the other hand, the approach followed by <a href="https://github.com/akka/akka/blob/master/akka-actor/src/main/scala/akka/actor/LightArrayRevolverScheduler.scala">Akka&rsquo;s scheduler</a> and by <a href="https://docs.jboss.org/netty/3.1/api/org/jboss/netty/util/HashedWheelTimer.html">netty&rsquo;s scheduler</a>.</p>
 </li>
 </ol>
-<h1 id="implementation">Implementation</h1>
+<h2 id="implementation">Implementation</h2>
 <p>In this article, we&rsquo;re going down route #1, although approach #2 is most likely easier to implement..</p>
 <p>As described, the crux of the algorithm is a priority queue of <code>Task</code>s that need to be ordered by their scheduled <code>startTime</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Scheduler</span> <span class="o">{</span>
@@ -52,7 +52,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div><p>We then need to ask ourselves the following question:</p>
-<h1 id="should-tasks-run-on-the-scheduling-thread">Should tasks run on the scheduling thread?</h1>
+<h2 id="should-tasks-run-on-the-scheduling-thread">Should tasks run on the scheduling thread?</h2>
 <p>The scheduler itself will always need to run on a thread of its own, but when the time comes to finally run a given task, we may either run it directly on the scheduling thread or spawn it on a new thread, or in a thread belonging to a thread-pool.</p>
 <p>Running arbitrary tasks on the scheduling thread is risky, as there are no guarantees that the task is going to run quick, or even that will ever terminate &ndash; and that puts the whole scheduler in jeopardy.</p>
 <p>For that reason, all schedulers will in general spawn their tasks in alternate threads. Our scheduler will take an already existing <code>ExecutorService</code> in its constructor and will execute all its tasks on it.</p>
@@ -64,7 +64,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
         <span class="k">this</span><span class="o">.</span><span class="na">executorService</span> <span class="o">=</span> <span class="n">executorService</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h1 id="scheduling-thread-creation">Scheduling Thread Creation</h1>
+</code></pre></div><h2 id="scheduling-thread-creation">Scheduling Thread Creation</h2>
 <p>There are two times when the scheduling thread may be created: either eagerly when instantiating a <code>Scheduler</code> object or lazily when the first task gets submitted.</p>
 <p>From a practical perspective, a scheduling thread is only needed from the moment a task is submitted, as if it gets created before that time it&rsquo;s just going to be sleeping. It then only really needs to live until there are no further tasks to be processed. It could by that time be immediately destroyed, or it may be kept alive either indefinitely or temporarily, just in case new tasks may arrive in the near future. Destroying it too early may mean having threads being recurrently created and destroyed for no good reason, keeping it forever alive may also be a waste of resources if no new tasks end up being submitted to the scheduler.</p>
 <p>For simplicity, in this implementation the thread will be created at instantiation time.</p>
@@ -78,7 +78,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
     <span class="o">}</span>
 
     <span class="o">...</span>
-</code></pre></div><h1 id="scheduling-of-tasks">Scheduling of Tasks</h1>
+</code></pre></div><h2 id="scheduling-of-tasks">Scheduling of Tasks</h2>
 <p>Scheduling a task entails entering a synchronize block, wrapping the given <code>Runnable</code> in a <code>Task</code> object, and in case we determine this newly created task to be the earliest task in the queue, warn the scheduling thread that it needs to update its timed wait:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">CompletionStage</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="nf">schedule</span><span class="o">(</span><span class="n">LocalDateTime</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Duration</span><span class="o">&gt;</span> <span class="n">frequency</span><span class="o">,</span> <span class="n">Runnable</span> <span class="n">runnable</span><span class="o">)</span> <span class="o">{</span>
     <span class="kd">synchronized</span> <span class="o">(</span><span class="n">schedulingThread</span><span class="o">)</span> <span class="o">{</span>
@@ -90,7 +90,7 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
         <span class="k">return</span> <span class="n">future</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h1 id="the-scheduling-thread">The Scheduling Thread</h1>
+</code></pre></div><h2 id="the-scheduling-thread">The Scheduling Thread</h2>
 <p>The scheduler thread will sleep indefinitely if there are no tasks in sight. The moment one is found, a timed wait is performed. We need to be aware that there are no guarantees that the timed wait is going to be accurate &ndash; there may be jitter, there may be a long garbage-collection pause, or any it may be that the underling scheduler or clock is not that precise. We should take into consideration that when our thread wakes up there may be tasks to be processed from earlier dates. For the aforementioned reasons, the scheduling thread will most likely lag when waking up from its sleep, but it&rsquo;s also possible that it may be slightly ahead at times. This could introduce an interesting problem: the scheduler is supposed to wake up at <code>t</code> but wakes up at <code>t - 1ms</code> &ndash; what should it do now? To better deal with those situations, we may introduce a <code>milliResolution</code> parameter, that will help us define what we consider to be &ldquo;now&rdquo;. If <code>milliResolution = 2ms</code>, any task in the interval <code>[t, t + 2ms]</code> will be considered as now, and tasks in that interval will be processed immediately.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">final</span> <span class="n">Thread</span> <span class="n">schedulingThread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">this</span><span class="o">::</span><span class="n">scheduler</span><span class="o">);</span>
 
@@ -396,10 +396,11 @@ interface Scheduler { public void schedule(LocalDateTime startTime, Runnable run
 			<pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
 			
 			<guid>https://jorgedfbranco.github.io/posts/writing-an-expression-evaluator-with-recursive-descent-parsing/</guid>
-			<description>Let&amp;rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
+			<description>Introduction Let&amp;rsquo;s consider the problem of implementing a function evalExpr(str): double that, given an arbitrary well-formed mathematical expression, calculates its value.
 Examples of such calls and their respective return values would be:
  evalExpr(&amp;quot;1 + 2 * 3 / 4 - 1&amp;quot;) = 1.5. evalExpr(&amp;quot;1 * (2 + 3)&amp;quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&amp;rsquo;s Shunting-yard algorithm, but in this article we&amp;rsquo;re going to focus on solving it with a recursive-descent parser, as it&amp;rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.</description>
-			<content type="html"><![CDATA[<p>Let&rsquo;s consider the problem of implementing a function <code>evalExpr(str): double</code> that, given an arbitrary well-formed mathematical expression, calculates its value.</p>
+			<content type="html"><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>Let&rsquo;s consider the problem of implementing a function <code>evalExpr(str): double</code> that, given an arbitrary well-formed mathematical expression, calculates its value.</p>
 <p>Examples of such calls and their respective return values would be:</p>
 <ul>
 <li><code>evalExpr(&quot;1 + 2 * 3 / 4 - 1&quot;) = 1.5</code>.</li>
@@ -423,7 +424,7 @@ Examples of such calls and their respective return values would be:
     <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Invalid input string.&#34;</span><span class="o">);</span>
 <span class="o">}</span>
 </code></pre></div><p>The conversion process is quite mechanical, and is one of the main selling points of recursive-descent parsers.</p>
-<h1 id="defining-the-grammar-a-first-stab">Defining the Grammar: A First Stab</h1>
+<h2 id="defining-the-grammar-a-first-stab">Defining the Grammar: A First Stab</h2>
 <p>We&rsquo;ll now come up with a grammar that describes the full set of strings our little program is able to process, that is, the parser&rsquo;s language:</p>
 <pre><code>S -&gt; S '+' S
    | S '-' S
@@ -433,7 +434,7 @@ Examples of such calls and their respective return values would be:
    | int
 </code></pre><p>This grammar will indeed accept any correctly formed mathematical expression, and it&rsquo;s going to reject all other input strings. Unfortunately, there are more earthly concerns to take into consideration when coming up with a grammar, and the above shown grammar fails on multiple fronts on that regard.</p>
 <p>Let&rsquo;s go through the problems the above grammar presents:</p>
-<h2 id="problem-1-ambiguity">Problem 1: Ambiguity</h2>
+<h3 id="problem-1-ambiguity">Problem 1: Ambiguity</h3>
 <p>The grammar as presently stated is ambiguous. An ambiguous grammar contains multiple possible leftmost-derivations of at least a subset of the accepted input strings:</p>
 <p>For instance, the input string <code>1 / 2 / 3</code> can be derived both by</p>
 <pre><code>S =&gt; S '/' S
@@ -444,7 +445,7 @@ Examples of such calls and their respective return values would be:
   =&gt; int '/' S
   =&gt; ...
 </code></pre><p>This may be a show-stopper for some sorts of parsers (especially bottom-up parsers) but needs not be for a recursive-descent one. We&rsquo;ll keep this in mind, as our final grammar will indeed be non-ambiguous.</p>
-<h2 id="problem-2-lack-of-precedence-rules">Problem 2: Lack of Precedence Rules</h2>
+<h3 id="problem-2-lack-of-precedence-rules">Problem 2: Lack of Precedence Rules</h3>
 <p>The grammar doesn&rsquo;t enforce any kind of precedence rules. Examples of possible derivations of <code>1 + 2 * 3</code>  are:</p>
 <pre><code>S =&gt; S '+' S
   =&gt; S '+' (S '*' S)
@@ -468,7 +469,7 @@ B -&gt; B '*' B
 C -&gt; '(' A ')'
    | int
 </code></pre><p>With this reformulation, it&rsquo;s now guaranteed that all derivations will have the right precedence levels.</p>
-<h2 id="problem-3-left-recursiveness">Problem 3: Left-Recursiveness</h2>
+<h3 id="problem-3-left-recursiveness">Problem 3: Left-Recursiveness</h3>
 <p>As described in the intro, the gist of recursive-descent is to convert our grammar into some running code, where each non-terminal left-side definition <code>X</code> ends up as a method definition <code>X()</code>, and any reference to non-terminal <code>X</code> gets translated into a call to <code>X()</code>.</p>
 <p>For example, the following production</p>
 <pre><code>A -&gt; A '+' A
@@ -502,7 +503,7 @@ C -&gt; '(' A ')'
    | int
    | A
 </code></pre><p>the left-recursiveness would still be there and this could still, at least for some inputs, lead to stackoverflows.</p>
-<h2 id="problem-4-operators-right-associativity">Problem 4: Operators Right-Associativity</h2>
+<h3 id="problem-4-operators-right-associativity">Problem 4: Operators Right-Associativity</h3>
 <p>Addition or multiplication operators are said to be associative operators &ndash; <code>(A op B) op C = A op (B op C)</code>. Unfortunately, the same is not true for subtractions and divisions, where for instance, <code>(A / B) / C != A / (B / C)</code> for the general case. This again presents a problem, as fixing the left-recursiveness of the grammar now made our operators right-associative.</p>
 <p>Luckily, we can fix the problem by reformulating our grammar as:</p>
 <pre><code>A -&gt; B ['+' | '-') B]*
@@ -510,14 +511,14 @@ B -&gt; C ['*' | '/') C]*
 C -&gt; '(' A ')'
    | int
 </code></pre><p>so for the non-terminals <code>A</code> and <code>B</code>, the corresponding code will start by consuming the first non-terminal they find (in this case, <code>B</code> and <code>C</code>, respectively) and then, keep consuming any remaining operators followed by non-terminals if there are any. This is going to consume them left-to-right, as we need.</p>
-<h1 id="final-solution">Final Solution</h1>
-<h2 id="grammar">Grammar</h2>
+<h2 id="final-solution">Final Solution</h2>
+<h3 id="grammar">Grammar</h3>
 <p>Our grammar has suffered a lot of changes throughout the article, but now it should be ready for consumption. Especially when converting it to code, it&rsquo;s quite often important to have readable names, so I adjusted the non-terminal names to something more palatable. Other than that, the grammar is exactly the same as the one we found in the previous section:</p>
 <pre><code>Expr -&gt; Factor ['+' | '-') Factor]*
 Factor -&gt; Term ['*' | '/') Term]*
 Term -&gt; '(' Expr ')'
    | int
-</code></pre><h2 id="code">Code</h2>
+</code></pre><h3 id="code">Code</h3>
 <p>We&rsquo;re finally ready to implement the full parser.</p>
 <p>To run the parser we just need to keep track of:</p>
 <ul>
@@ -619,8 +620,8 @@ Term -&gt; '(' Expr ')'
             <span class="n">i</span><span class="o">++;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h1 id="leetcode-problems">LeetCode Problems</h1>
-<h2 id="ternary-expression-parser">Ternary Expression Parser</h2>
+</code></pre></div><h2 id="leetcode-problems">LeetCode Problems</h2>
+<h3 id="ternary-expression-parser">Ternary Expression Parser</h3>
 <p>Link: <a href="https://leetcode.com/problems/ternary-expression-parser">https://leetcode.com/problems/ternary-expression-parser</a></p>
 <p>We&rsquo;re asked to implement a ternary operator expression parser. The grammar is quite simple, but we need to be aware the return type of the function can be either an integer or a boolean.</p>
 <p>Grammar:</p>
@@ -663,18 +664,18 @@ Term -&gt; '(' Expr ')'
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h2 id="parsing-a-boolean-expression">Parsing A Boolean Expression</h2>
+</code></pre></div><h3 id="parsing-a-boolean-expression">Parsing A Boolean Expression</h3>
 <p>Link: <a href="https://leetcode.com/problems/parsing-a-boolean-expression/">https://leetcode.com/problems/parsing-a-boolean-expression/</a></p>
 <p>The grammar for this problem is:</p>
 <pre><code>A -&gt; '!(' A ')'
    | ('|(' | '&amp;(') A (',' A)*) ')'
    | ('t' | 'f')
-</code></pre><h2 id="basic-calculator-i-ii--iii">Basic Calculator I, II &amp; III</h2>
-<h3 id="httpsleetcodecomproblemsbasic-calculatorhttpsleetcodecomproblemsbasic-calculator"><a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a></h3>
+</code></pre><h3 id="basic-calculator-i-ii--iii">Basic Calculator I, II &amp; III</h3>
+<h4 id="httpsleetcodecomproblemsbasic-calculatorhttpsleetcodecomproblemsbasic-calculator"><a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a></h4>
 <p>This problem requires a simpler grammar to the one developed in this article, as it only needs to support additions or subtractions. Our grammar would work as well, though.</p>
-<h3 id="httpsleetcodecomproblemsbasic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii"><a href="https://leetcode.com/problems/basic-calculator-ii">https://leetcode.com/problems/basic-calculator-ii/</a></h3>
+<h4 id="httpsleetcodecomproblemsbasic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii"><a href="https://leetcode.com/problems/basic-calculator-ii">https://leetcode.com/problems/basic-calculator-ii/</a></h4>
 <p>We can use the very same grammar we developed in this article.</p>
-<h3 id="httpsleetcodecomproblemsbasic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii"><a href="https://leetcode.com/problems/basic-calculator-iii">https://leetcode.com/problems/basic-calculator-iii/</a></h3>
+<h4 id="httpsleetcodecomproblemsbasic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii"><a href="https://leetcode.com/problems/basic-calculator-iii">https://leetcode.com/problems/basic-calculator-iii/</a></h4>
 <p>Another rehash of <code>Basic Calculator II</code> as far as I understand it.</p>
 ]]></content>
 		</item>
