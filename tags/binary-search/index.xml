@@ -14,7 +14,8 @@
       <pubDate>Fri, 30 Jul 2021 00:00:00 +0000</pubDate>
       
       <guid>https://jorgedfbranco.github.io/posts/an-introduction-to-binary-search/</guid>
-      <description>&lt;p&gt;Binary search allows us to quickly &amp;ndash; in &lt;code&gt;O(lg n)&lt;/code&gt; time &amp;ndash; find the index of a value &lt;code&gt;v&lt;/code&gt; in a sorted array &lt;code&gt;A&lt;/code&gt;. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an &lt;code&gt;O(n)&lt;/code&gt; operation), as long as we know the array to be sorted.&lt;/p&gt;</description>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Binary search allows us to quickly &amp;ndash; in &lt;code&gt;O(lg n)&lt;/code&gt; time &amp;ndash; find the index of a value &lt;code&gt;v&lt;/code&gt; in a sorted array &lt;code&gt;A&lt;/code&gt;. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an &lt;code&gt;O(n)&lt;/code&gt; operation), as long as we know the array to be sorted.&lt;/p&gt;</description>
     </item>
     
   </channel>
