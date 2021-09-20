@@ -6,8 +6,252 @@
 		<generator>Hugo -- gohugo.io</generator>
 		<language>en-us</language>
 		<copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-		<lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate>
+		<lastBuildDate>Mon, 20 Sep 2021 00:00:00 +0000</lastBuildDate>
 		<atom:link href="https://jorgedfbranco.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+		
+		<item>
+			<title>Thread-Local-Allocation-Buffers In The Hotspot VM</title>
+			<link>https://jorgedfbranco.github.io/posts/thread-local-allocation-buffers-in-the-hotspot-vm/</link>
+			<pubDate>Mon, 20 Sep 2021 00:00:00 +0000</pubDate>
+			
+			<guid>https://jorgedfbranco.github.io/posts/thread-local-allocation-buffers-in-the-hotspot-vm/</guid>
+			<description>Introduction Applications developed in managed languages running on top of a virtual-machine like the JVM or the CLR tend to create inordinate amounts of objects, as developers are freed from having to manually take care of managing the created object&amp;rsquo;s life-cycles. If not for the occasional object allocation optimized away by a smart compiler, most object creation involves the allocation of memory in the application&amp;rsquo;s heap.
+Given that nowadays most applications are multi-threaded, allocating an object on the heap can be troublesome &amp;ndash; multiple threads may attempt to do it concurrently and unless some sort of synchronization logic is involved, malign data-races are bound to happen.</description>
+			<content type="html"><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>Applications developed in managed languages running on top of a virtual-machine like the <a href="https://en.wikipedia.org/wiki/Java_virtual_machine">JVM</a> or the <a href="https://en.wikipedia.org/wiki/Common_Language_Runtime">CLR</a> tend to create inordinate amounts of objects, as developers are freed from having to manually take care of managing the created object&rsquo;s life-cycles. If not for the occasional object allocation optimized away by a smart compiler, most object creation involves the allocation of memory in the application&rsquo;s heap.</p>
+<p>Given that nowadays most applications are multi-threaded, allocating an object on the heap can be troublesome &ndash; multiple threads may attempt to do it concurrently and unless some sort of synchronization logic is involved, malign data-races are bound to happen. Wrapping the allocation function with a lock will make sure the allocation logic is correct but will induce serious performance degradation &ndash; the higher the number of threads and quantity of allocation requests per unit of time, the higher the pressure on the lock and the slower requests will end up served.</p>
+<p>To minimize the problem, most modern VMs will in a way or another use the concept of a <code>thread-local-allocation-buffer</code> (TLAB). Instead of having threads perform hundreds of requests per second to the heap, it&rsquo;s preferable to have them request huge chunk of memory from time to time. They can then in a thread-local, unsynchronized way allocate all objects from that local chunk (buffer) at very high speeds. Only when that buffer runs out of available memory shall the thread make another request to the heap.</p>
+<h2 id="hotspot">HotSpot</h2>
+<p>The aim of this article is to investigate how TLABs are implemented on the HotSpot VM and go over a couple of their most commmon use-cases:</p>
+<ol>
+<li>How and when are they initialized? To what size?</li>
+<li>How is memory allocated from them, namely, when creating an object?</li>
+<li>How are they refilled when running out of available memory;</li>
+<li>How are they dealt with when a thread dies.</li>
+</ol>
+<p>For that we&rsquo;ll go over HotSpot&rsquo;s <code>Thread</code> and <code>ThreadLocalAllocBuffer</code> classes, where TLAB&rsquo;s core logic resides.</p>
+<h3 id="thread-implementation">Thread Implementation</h3>
+<p>The base thread definition / implementation in HotSpot is at <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/runtime/thread.hpp">thread.hpp</a> / <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/runtime/thread.cpp">thread.cpp</a>. It&rsquo;s quite a fat class but we&rsquo;ll keep it simple by only looking at TLAB-related fields / methods:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">Thread</span><span class="o">:</span> <span class="k">public</span> <span class="n">ThreadShadow</span> <span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="k">private</span><span class="o">:</span>
+        <span class="n">ThreadLocalAllocBuffer</span> <span class="n">_tlab</span><span class="p">;</span>                 <span class="c1">// Thread-local eden
+</span><span class="c1"></span>
+    <span class="p">...</span>
+
+    <span class="k">public</span><span class="o">:</span>
+        <span class="c1">// Thread-Local Allocation Buffer (TLAB) support
+</span><span class="c1"></span>        <span class="n">ThreadLocalAllocBuffer</span><span class="o">&amp;</span> <span class="n">tlab</span><span class="p">()</span>                 <span class="p">{</span> <span class="k">return</span> <span class="n">_tlab</span><span class="p">;</span> <span class="p">}</span>
+        <span class="kt">void</span> <span class="nf">initialize_tlab</span><span class="p">();</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div><p>When the <code>Thread</code> class is first created, an un-initialized TLAB structure is inlined in the <code>Thread</code> object. But it will only get initialized the moment a call to <code>JavaThread::run()</code> is performed:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// The main routine called by a new Java thread. This isn&#39;t overridden
+</span><span class="c1">// by subclasses, instead different subclasses define a different &#34;entry_point&#34;
+</span><span class="c1">// which defines the actual logic for that kind of thread.
+</span><span class="c1"></span><span class="kt">void</span> <span class="n">JavaThread</span><span class="o">::</span><span class="n">run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// initialize thread-local alloc buffer related fields
+</span><span class="c1"></span>    <span class="n">initialize_tlab</span><span class="p">();</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">Thread</span><span class="o">::</span><span class="n">initialize_tlab</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">UseTLAB</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tlab</span><span class="p">().</span><span class="n">initialize</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>And, as expected, the moment the thread is killed, the TLAB is also destroyed (retired):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">JavaThread</span><span class="o">::</span><span class="n">exit</span><span class="p">(</span><span class="kt">bool</span> <span class="n">destroy_vm</span><span class="p">,</span> <span class="n">ExitType</span> <span class="n">exit_type</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">UseTLAB</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tlab</span><span class="p">().</span><span class="n">retire</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div><p>To know what <code>tlab().initialize()</code> and <code>tlab().retire()</code> actually do, we&rsquo;ll now need to delve into the TLAB object, <code>ThreadLocalAllocBuffer</code>:</p>
+<h3 id="tlab-implementation">TLAB Implementation</h3>
+<h4 id="class-definition">Class Definition</h4>
+<p>A TLAB is represented in HotSpot by the <code>ThreadLocalAllocBuffer</code> class:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">ThreadLocalAllocBuffer</span><span class="o">:</span> <span class="k">public</span> <span class="n">CHeapObj</span><span class="o">&lt;</span><span class="n">mtThread</span><span class="o">&gt;</span> <span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">HeapWord</span><span class="o">*</span> <span class="n">_start</span><span class="p">;</span>                              <span class="c1">// address of TLAB
+</span><span class="c1"></span>    <span class="n">HeapWord</span><span class="o">*</span> <span class="n">_top</span><span class="p">;</span>                                <span class="c1">// address after last allocation
+</span><span class="c1"></span>    <span class="n">HeapWord</span><span class="o">*</span> <span class="n">_pf_top</span><span class="p">;</span>                             <span class="c1">// allocation prefetch watermark
+</span><span class="c1"></span>    <span class="n">HeapWord</span><span class="o">*</span> <span class="n">_end</span><span class="p">;</span>                                <span class="c1">// allocation end (can be the sampling end point or _allocation_end)
+</span><span class="c1"></span>    <span class="n">HeapWord</span><span class="o">*</span> <span class="n">_allocation_end</span><span class="p">;</span>                     <span class="c1">// end for allocations (actual TLAB end, excluding alignment_reserve)
+</span><span class="c1"></span>
+    <span class="n">size_t</span>    <span class="n">_desired_size</span><span class="p">;</span>                       <span class="c1">// desired size   (including alignment_reserve)
+</span><span class="c1"></span>    <span class="n">size_t</span>    <span class="n">_refill_waste_limit</span><span class="p">;</span>                 <span class="c1">// hold onto tlab if free() is larger than this
+</span><span class="c1"></span>    <span class="n">size_t</span>    <span class="n">_allocated_before_last_gc</span><span class="p">;</span>           <span class="c1">// total bytes allocated up until the last gc
+</span><span class="c1"></span>    <span class="n">size_t</span>    <span class="n">_bytes_since_last_sample_point</span><span class="p">;</span>      <span class="c1">// bytes since last sample point.
+</span><span class="c1"></span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div><p>and roughly speaking, it will contain at any point three pointers:</p>
+<ul>
+<li><code>_start</code> - a pointer to the starting address of the region of this TLAB;</li>
+<li><code>_top</code> - a pointer to the starting address of the next allocated object in this TLAB;</li>
+<li><code>_end</code> - a pointer to the end of the region of this TLAB.</li>
+</ul>
+<h4 id="allocation">Allocation</h4>
+<p>Allocation happens in a relatively straightforward way: as long as there&rsquo;s enough space in the TLAB, allocating <code>size</code> amount of memory out of a TLAB can be as simple as bumping up <code>_top</code> by <code>size</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kr">inline</span> <span class="n">HeapWord</span><span class="o">*</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">allocate</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">HeapWord</span><span class="o">*</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">top</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">pointer_delta</span><span class="p">(</span><span class="n">end</span><span class="p">(),</span> <span class="n">obj</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">set_top</span><span class="p">(</span><span class="n">obj</span> <span class="o">+</span> <span class="n">size</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">obj</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><p>In the bytecode interpreter, for instance, when an allocation request comes in, here&rsquo;s how <code>ThreadLocalAllocBuffer::allocate()</code> ends up invoked:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">BytecodeInterpreter</span><span class="o">::</span><span class="n">run</span><span class="p">(</span><span class="n">interpreterState</span> <span class="n">istate</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">...</span>
+        <span class="n">CASE</span><span class="p">(</span><span class="n">_new</span><span class="p">)</span><span class="o">:</span> <span class="p">{</span>
+            <span class="p">...</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ik</span><span class="o">-&gt;</span><span class="n">is_initialized</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="n">ik</span><span class="o">-&gt;</span><span class="n">can_be_fastpath_allocated</span><span class="p">())</span> <span class="p">{</span>
+                <span class="n">size_t</span> <span class="n">obj_size</span> <span class="o">=</span> <span class="n">ik</span><span class="o">-&gt;</span><span class="n">size_helper</span><span class="p">();</span>
+                <span class="n">HeapWord</span><span class="o">*</span> <span class="n">result</span> <span class="o">=</span> <span class="n">THREAD</span><span class="o">-&gt;</span><span class="n">tlab</span><span class="p">().</span><span class="n">allocate</span><span class="p">(</span><span class="n">obj_size</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">oop</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">cast_to_oop</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+
+                    <span class="c1">// Initialize header
+</span><span class="c1"></span>                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">set_mark</span><span class="p">(</span><span class="n">markWord</span><span class="o">::</span><span class="n">prototype</span><span class="p">());</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">set_klass_gap</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+                    <span class="n">obj</span><span class="o">-&gt;</span><span class="n">set_klass</span><span class="p">(</span><span class="n">ik</span><span class="p">);</span>
+
+                    <span class="c1">// Must prevent reordering of stores for object initialization
+</span><span class="c1"></span>                    <span class="c1">// with stores that publish the new object.
+</span><span class="c1"></span>                    <span class="n">OrderAccess</span><span class="o">::</span><span class="n">storestore</span><span class="p">();</span>
+                    <span class="p">...</span>
+</code></pre></div><p>otherwise, a slower and costlier path is followed that ends up performing direct allocations on the Heap itself:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// Slow case allocation
+</span><span class="c1"></span><span class="n">CALL_VM</span><span class="p">(</span><span class="n">InterpreterRuntime</span><span class="o">::</span><span class="n">_new</span><span class="p">(</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">METHOD</span><span class="o">-&gt;</span><span class="n">constants</span><span class="p">(),</span> <span class="n">index</span><span class="p">),</span> <span class="n">handle_exception</span><span class="p">);</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">interpreterRuntime</span><span class="p">.</span><span class="n">cpp</span>
+
+<span class="n">JRT_ENTRY</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span> <span class="n">InterpreterRuntime</span><span class="o">::</span><span class="n">_new</span><span class="p">(</span><span class="n">JavaThread</span><span class="o">*</span> <span class="n">current</span><span class="p">,</span> <span class="n">ConstantPool</span><span class="o">*</span> <span class="n">pool</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">))</span>
+    <span class="n">Klass</span><span class="o">*</span> <span class="n">k</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">klass_at</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">CHECK</span><span class="p">);</span>
+    <span class="n">InstanceKlass</span><span class="o">*</span> <span class="n">klass</span> <span class="o">=</span> <span class="n">InstanceKlass</span><span class="o">::</span><span class="n">cast</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+
+    <span class="p">...</span>
+    <span class="n">oop</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">klass</span><span class="o">-&gt;</span><span class="n">allocate_instance</span><span class="p">(</span><span class="n">CHECK</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="n">JRT_END</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">instanceOop</span> <span class="n">InstanceKlass</span><span class="o">::</span><span class="n">allocate_instance</span><span class="p">(</span><span class="n">TRAPS</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">size_helper</span><span class="p">();</span>
+
+    <span class="p">...</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">instanceOop</span><span class="p">)</span><span class="n">Universe</span><span class="o">::</span><span class="n">heap</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">obj_allocate</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">CHECK_NULL</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div><h4 id="vm-parameters">VM Parameters</h4>
+<p>All the VM parameters related to TLABs, such as <code>UseTLAB</code>, <code>ResizeTLAB</code>, <code>ZeroTLAB</code>, <code>MinTLABSize</code>, <code>TLABSize</code>, may be found at <code>tlab_globals.cpp</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">    <span class="p">...</span>
+    <span class="cm">/* Thread Local Allocation Buffer */</span>                                      \
+                                                                              \
+    <span class="n">product</span><span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="n">UseTLAB</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span>                                              \
+            <span class="s">&#34;Use thread-local object allocation&#34;</span><span class="p">)</span>                             \
+                                                                              \
+    <span class="n">product</span><span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="n">ResizeTLAB</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span>                                           \
+            <span class="s">&#34;Dynamically resize TLAB size for threads&#34;</span><span class="p">)</span>                       \
+                                                                              \
+    <span class="n">product</span><span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="n">ZeroTLAB</span><span class="p">,</span> <span class="nb">false</span><span class="p">,</span>                                            \
+            <span class="s">&#34;Zero out the newly created TLAB&#34;</span><span class="p">)</span>                                \
+                                                                              \
+    <span class="n">product</span><span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="n">TLABStats</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span>                                            \
+            <span class="s">&#34;Provide more detailed and expensive TLAB statistics.&#34;</span><span class="p">)</span>           \
+                                                                              \
+    <span class="n">product</span><span class="p">(</span><span class="n">size_t</span><span class="p">,</span> <span class="n">MinTLABSize</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">K</span><span class="p">,</span>                                         \
+            <span class="s">&#34;Minimum allowed TLAB size (in bytes)&#34;</span><span class="p">)</span>                           \
+            <span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_uintx</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>                                             \
+            <span class="n">constraint</span><span class="p">(</span><span class="n">MinTLABSizeConstraintFunc</span><span class="p">,</span><span class="n">AfterMemoryInit</span><span class="p">)</span>             \
+                                                                              \
+    <span class="n">product</span><span class="p">(</span><span class="n">size_t</span><span class="p">,</span> <span class="n">TLABSize</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>                                              \
+            <span class="s">&#34;Starting TLAB size (in bytes); zero means set ergonomically&#34;</span><span class="p">)</span>    \
+            <span class="n">constraint</span><span class="p">(</span><span class="n">TLABSizeConstraintFunc</span><span class="p">,</span><span class="n">AfterMemoryInit</span><span class="p">)</span>                \
+    <span class="p">...</span>
+</code></pre></div><h4 id="initialization-and-refill">Initialization and Refill</h4>
+<p>The allocation of the region of memory used by a TLAB is, and maybe surprisingly, always external to this class. It&rsquo;s always up to the caller of <code>ThreadLocalAllocBuffer</code> to correctly allocate a memory region <code>R</code> and call <code>ThreadLocalAllocBuffer::fill(start, top, new_size)</code> to make the TLAB be aware of, and use, <code>R</code>.</p>
+<p>In pratical terms, the first time a memory region is associated with a TLAB is when a thread&rsquo;s first allocation request comes in and fails:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">HeapWord</span><span class="o">*</span> <span class="n">MemAllocator</span><span class="o">::</span><span class="n">allocate_inside_tlab</span><span class="p">(</span><span class="n">Allocation</span><span class="o">&amp;</span> <span class="n">allocation</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="c1">// Try allocating from an existing TLAB.
+</span><span class="c1"></span>    <span class="n">HeapWord</span><span class="o">*</span> <span class="n">mem</span> <span class="o">=</span> <span class="n">_thread</span><span class="o">-&gt;</span><span class="n">tlab</span><span class="p">().</span><span class="n">allocate</span><span class="p">(</span><span class="n">_word_size</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mem</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="n">mem</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Try refilling the TLAB and allocating the object in it.
+</span><span class="c1"></span>    <span class="k">return</span> <span class="nf">allocate_inside_tlab_slow</span><span class="p">(</span><span class="n">allocation</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">HeapWord</span><span class="o">*</span> <span class="n">MemAllocator</span><span class="o">::</span><span class="n">allocate_inside_tlab_slow</span><span class="p">(</span><span class="n">Allocation</span><span class="o">&amp;</span> <span class="n">allocation</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="n">size_t</span> <span class="n">min_tlab_size</span> <span class="o">=</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">compute_min_size</span><span class="p">(</span><span class="n">_word_size</span><span class="p">);</span>
+    <span class="n">mem</span> <span class="o">=</span> <span class="n">Universe</span><span class="o">::</span><span class="n">heap</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">allocate_new_tlab</span><span class="p">(</span><span class="n">min_tlab_size</span><span class="p">,</span> <span class="n">new_tlab_size</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">allocation</span><span class="p">.</span><span class="n">_allocated_tlab_size</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="n">tlab</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span><span class="n">mem</span><span class="p">,</span> <span class="n">mem</span> <span class="o">+</span> <span class="n">_word_size</span><span class="p">,</span> <span class="n">allocation</span><span class="p">.</span><span class="n">_allocated_tlab_size</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">mem</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><p>This is, of course, the very same code-path that&rsquo;s executed when, after a sequence of allocations, the TLAB gets full and a new allocation from the heap is needed to refill it.</p>
+<h4 id="sizing">Sizing</h4>
+<p>The TLAB size can be hard-coded and passed as a JVM parameter (<code>TLABSize</code>), or calculated on-the-fly:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">size_t</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">initial_desired_size</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">size_t</span> <span class="n">init_sz</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">TLABSize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">init_sz</span> <span class="o">=</span> <span class="n">TLABSize</span> <span class="o">/</span> <span class="n">HeapWordSize</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// Initial size is a function of the average number of allocating threads.
+</span><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">nof_threads</span> <span class="o">=</span> <span class="n">ThreadLocalAllocStats</span><span class="o">::</span><span class="n">allocating_threads_avg</span><span class="p">();</span>
+
+    <span class="n">init_sz</span>  <span class="o">=</span> <span class="p">(</span><span class="n">Universe</span><span class="o">::</span><span class="n">heap</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">tlab_capacity</span><span class="p">(</span><span class="kr">thread</span><span class="p">())</span> <span class="o">/</span> <span class="n">HeapWordSize</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">nof_threads</span> <span class="o">*</span> <span class="n">target_refills</span><span class="p">());</span>
+    <span class="n">init_sz</span> <span class="o">=</span> <span class="n">align_object_size</span><span class="p">(</span><span class="n">init_sz</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">init_sz</span> <span class="o">=</span> <span class="n">MIN2</span><span class="p">(</span><span class="n">MAX2</span><span class="p">(</span><span class="n">init_sz</span><span class="p">,</span> <span class="n">min_size</span><span class="p">()),</span> <span class="n">max_size</span><span class="p">());</span>
+  <span class="k">return</span> <span class="n">init_sz</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><h4 id="death">Death</h4>
+<p>Finally, what happens when a thread is about do die? It turns out that whatever space is still unused will be used to allocate a dummy integer array:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">retire</span><span class="p">(</span><span class="n">ThreadLocalAllocStats</span><span class="o">*</span> <span class="n">stats</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">end</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kr">thread</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">incr_allocated_bytes</span><span class="p">(</span><span class="n">used_bytes</span><span class="p">());</span>
+      <span class="n">insert_filler</span><span class="p">();</span>
+      <span class="n">initialize</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">insert_filler</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">top</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">hard_end</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">Universe</span><span class="o">::</span><span class="n">heap</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">fill_with_dummy_object</span><span class="p">(</span><span class="n">top</span><span class="p">(),</span> <span class="n">hard_end</span><span class="p">(),</span> <span class="nb">true</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p><code>CollectedHeap::fill_with_dummy_object()</code> will, after a sequence of calls end up at:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">CollectedHeap</span><span class="o">::</span><span class="n">fill_with_array</span><span class="p">(</span><span class="n">HeapWord</span><span class="o">*</span> <span class="n">start</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">words</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">zap</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="k">const</span> <span class="n">size_t</span> <span class="n">payload_size</span> <span class="o">=</span> <span class="n">words</span> <span class="o">-</span> <span class="n">filler_array_hdr_size</span><span class="p">();</span>
+    <span class="k">const</span> <span class="n">size_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">payload_size</span> <span class="o">*</span> <span class="n">HeapWordSize</span> <span class="o">/</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">jint</span><span class="p">);</span>
+
+    <span class="n">ObjArrayAllocator</span> <span class="nf">allocator</span><span class="p">(</span><span class="n">Universe</span><span class="o">::</span><span class="n">intArrayKlassObj</span><span class="p">(),</span> <span class="n">words</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">len</span><span class="p">,</span> <span class="cm">/* do_zero */</span> <span class="nb">false</span><span class="p">);</span>
+    <span class="n">allocator</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">start</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>We covered a simplified view of how TLABs work in HotSpot, and this should be more than enough to get one going if wanting to dive deeper. Be aware that not all GCs will use <code>ThreadLocalAllocBuffer</code>. The ZGC collector, for instance, will use its own implementation of a TLAB through its <code>ZThreadLocalAllocBuffer</code> class.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://alidg.me/blog/2019/6/21/tlab-jvm">Thread-Local Allocation Buffers in JVM</a></li>
+<li><a href="https://shipilev.net/jvm/anatomy-quarks/4-tlab-allocation/">JVM Anatomy Quark #4: TLAB allocation</a></li>
+<li><a href="https://programmerclick.com/article/3946498271/">Análisis de código fuente JVM G1 - asignación de espacio de montón para objetos</a></li>
+<li><a href="https://programmer.ink/think/thread-local-cache-tlab-for-jvm-source-analysis.html">Thread Local Cache TLAB for JVM Source Analysis</a></li>
+</ul>
+]]></content>
+		</item>
 		
 		<item>
 			<title>Implementing a Scheduler in Java</title>
@@ -812,6 +1056,38 @@ Term -&gt; '(' Expr ')'
 <h3 id="koko-eating-bananas">Koko Eating Bananas</h3>
 <p>Link: <a href="https://leetcode.com/problems/koko-eating-bananas">Koko Eating Bananas</a>.</p>
 <p>A problem that can be solved similarly to <code>Minimum Number of Days to Make M Bouquets</code>.</p>]]></content>
+		</item>
+		
+		<item>
+			<title></title>
+			<link>https://jorgedfbranco.github.io/posts/zgc-codebase/</link>
+			<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+			
+			<guid>https://jorgedfbranco.github.io/posts/zgc-codebase/</guid>
+			<description>ZGC Codebase Study Notes ZGC Heap When using ZGC, the VM will create a ZCollectedHeap (that inherits from CollectedHeap) class instance.
+Creation The heap is created in Universe.initialize_heap():
+_collectedHeap = GCConfig::arguments()-&amp;gt;create_heap(); that then instantiates a new ZCollectedHeap:
+CollectedHeap* ZArguments::create_heap() { return new ZCollectedHeap(); } ZGC Heap Structure A ZCollectedHeap is composed of:
+ ZHeap ZDriver ZDirector ZRuntimeWorkers  </description>
+			<content type="html"><![CDATA[<h1 id="zgc-codebase-study-notes">ZGC Codebase Study Notes</h1>
+<h2 id="zgc-heap">ZGC Heap</h2>
+<p>When using ZGC, the VM will create a <code>ZCollectedHeap</code> (that inherits from <code>CollectedHeap</code>) class instance.</p>
+<h3 id="creation">Creation</h3>
+<p>The heap is created in <code>Universe.initialize_heap()</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">_collectedHeap</span> <span class="o">=</span> <span class="n">GCConfig</span><span class="o">::</span><span class="n">arguments</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">create_heap</span><span class="p">();</span>
+</code></pre></div><p>that then instantiates a new <code>ZCollectedHeap</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">CollectedHeap</span><span class="o">*</span> <span class="n">ZArguments</span><span class="o">::</span><span class="n">create_heap</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">new</span> <span class="n">ZCollectedHeap</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div><h3 id="zgc-heap-structure">ZGC Heap Structure</h3>
+<p>A <code>ZCollectedHeap</code> is composed of:</p>
+<ul>
+<li><code>ZHeap</code></li>
+<li><code>ZDriver</code></li>
+<li><code>ZDirector</code></li>
+<li><code>ZRuntimeWorkers</code></li>
+</ul>
+]]></content>
 		</item>
 		
 	</channel>

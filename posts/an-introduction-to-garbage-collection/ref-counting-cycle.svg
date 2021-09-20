@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 182 122" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <rect id="ref-counting" x="-49.25" y="-49.25" width="800" height="400" style="fill:none;"/>
+    <g>
+        <circle cx="30.75" cy="30.75" r="30" style="fill:rgb(73,79,92);stroke:rgb(232,238,242);stroke-width:1.5px;"/>
+        <text x="22.972px" y="37.981px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:20px;fill:rgb(232,238,242);">A</text>
+    </g>
+    <g>
+        <circle cx="90.75" cy="90.75" r="30" style="fill:rgb(73,79,92);stroke:rgb(232,238,242);stroke-width:1.5px;"/>
+        <text x="82.972px" y="97.981px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:20px;fill:rgb(232,238,242);">A</text>
+    </g>
+    <g>
+        <circle cx="150.75" cy="30.75" r="30" style="fill:rgb(73,79,92);stroke:rgb(232,238,242);stroke-width:1.5px;"/>
+        <text x="142.972px" y="37.981px" style="font-family:'PalatinoLinotype-Roman', 'Palatino Linotype', serif;font-size:20px;fill:rgb(232,238,242);">A</text>
+    </g>
+    <path d="M67.098,61.795L69.75,69.75L61.795,67.098L67.098,67.098L67.098,61.795Z" style="fill:rgb(232,238,242);"/>
+    <path d="M51.75,51.75C51.75,51.75 62.093,62.093 67.098,67.098" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M121.795,54.402L129.75,51.75L127.098,59.705L127.098,54.402L121.795,54.402Z" style="fill:rgb(232,238,242);"/>
+    <path d="M111.75,69.75C111.75,69.75 122.093,59.407 127.098,54.402" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+    <path d="M68.25,34.5L60.75,30.75L68.25,27L64.5,30.75L68.25,34.5Z" style="fill:rgb(232,238,242);"/>
+    <path d="M120.75,30.75L64.5,30.75" style="fill:none;stroke:rgb(232,238,242);stroke-width:1px;"/>
+</svg>

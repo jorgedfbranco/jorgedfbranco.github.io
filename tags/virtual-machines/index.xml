@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>virtual-machines on Jorge Branco&#39;s Blog</title>
+    <link>https://jorgedfbranco.github.io/tags/virtual-machines/</link>
+    <description>Recent content in virtual-machines on Jorge Branco&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Mon, 20 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/tags/virtual-machines/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Thread-Local-Allocation-Buffers In The Hotspot VM</title>
+      <link>https://jorgedfbranco.github.io/posts/thread-local-allocation-buffers-in-the-hotspot-vm/</link>
+      <pubDate>Mon, 20 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://jorgedfbranco.github.io/posts/thread-local-allocation-buffers-in-the-hotspot-vm/</guid>
+      <description>Introduction Applications developed in managed languages running on top of a virtual-machine like the JVM or the CLR tend to create inordinate amounts of objects, as developers are freed from having to manually take care of managing the created object&amp;rsquo;s life-cycles. If not for the occasional object allocation optimized away by a smart compiler, most object creation involves the allocation of memory in the application&amp;rsquo;s heap.
+Given that nowadays most applications are multi-threaded, allocating an object on the heap can be troublesome &amp;ndash; multiple threads may attempt to do it concurrently and unless some sort of synchronization logic is involved, malign data-races are bound to happen.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Thread-Local-Allocation-Buffers In The Hotspot VM</title>
+      <link>https://jorgedfbranco.github.io/posts/thread-local-allocation-buffers-in-the-hotspot-vm/</link>
+      <pubDate>Mon, 20 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://jorgedfbranco.github.io/posts/thread-local-allocation-buffers-in-the-hotspot-vm/</guid>
+      <description>Introduction Applications developed in managed languages running on top of a virtual-machine like the JVM or the CLR tend to create inordinate amounts of objects, as developers are freed from having to manually take care of managing the created object&amp;rsquo;s life-cycles. If not for the occasional object allocation optimized away by a smart compiler, most object creation involves the allocation of memory in the application&amp;rsquo;s heap.
+Given that nowadays most applications are multi-threaded, allocating an object on the heap can be troublesome &amp;ndash; multiple threads may attempt to do it concurrently and unless some sort of synchronization logic is involved, malign data-races are bound to happen.</description>
+    </item>
+    
     <item>
       <title>Implementing a Scheduler in Java</title>
       <link>https://jorgedfbranco.github.io/posts/implementing-a-scheduler-in-java/</link>
@@ -48,6 +58,19 @@ Examples of such calls and their respective return values would be:
       <guid>https://jorgedfbranco.github.io/posts/an-introduction-to-binary-search/</guid>
       <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;Binary search allows us to quickly &amp;ndash; in &lt;code&gt;O(lg n)&lt;/code&gt; time &amp;ndash; find the index of a value &lt;code&gt;v&lt;/code&gt; in a sorted array &lt;code&gt;A&lt;/code&gt;. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an &lt;code&gt;O(n)&lt;/code&gt; operation), as long as we know the array to be sorted.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://jorgedfbranco.github.io/posts/zgc-codebase/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://jorgedfbranco.github.io/posts/zgc-codebase/</guid>
+      <description>ZGC Codebase Study Notes ZGC Heap When using ZGC, the VM will create a ZCollectedHeap (that inherits from CollectedHeap) class instance.
+Creation The heap is created in Universe.initialize_heap():
+_collectedHeap = GCConfig::arguments()-&amp;gt;create_heap(); that then instantiates a new ZCollectedHeap:
+CollectedHeap* ZArguments::create_heap() { return new ZCollectedHeap(); } ZGC Heap Structure A ZCollectedHeap is composed of:
+ ZHeap ZDriver ZDirector ZRuntimeWorkers  </description>
     </item>
     
   </channel>
