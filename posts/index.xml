@@ -1058,37 +1058,5 @@ Term -&gt; '(' Expr ')'
 <p>A problem that can be solved similarly to <code>Minimum Number of Days to Make M Bouquets</code>.</p>]]></content>
 		</item>
 		
-		<item>
-			<title></title>
-			<link>https://jorgedfbranco.github.io/posts/zgc-codebase/</link>
-			<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-			
-			<guid>https://jorgedfbranco.github.io/posts/zgc-codebase/</guid>
-			<description>ZGC Codebase Study Notes ZGC Heap When using ZGC, the VM will create a ZCollectedHeap (that inherits from CollectedHeap) class instance.
-Creation The heap is created in Universe.initialize_heap():
-_collectedHeap = GCConfig::arguments()-&amp;gt;create_heap(); that then instantiates a new ZCollectedHeap:
-CollectedHeap* ZArguments::create_heap() { return new ZCollectedHeap(); } ZGC Heap Structure A ZCollectedHeap is composed of:
- ZHeap ZDriver ZDirector ZRuntimeWorkers  </description>
-			<content type="html"><![CDATA[<h1 id="zgc-codebase-study-notes">ZGC Codebase Study Notes</h1>
-<h2 id="zgc-heap">ZGC Heap</h2>
-<p>When using ZGC, the VM will create a <code>ZCollectedHeap</code> (that inherits from <code>CollectedHeap</code>) class instance.</p>
-<h3 id="creation">Creation</h3>
-<p>The heap is created in <code>Universe.initialize_heap()</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">_collectedHeap</span> <span class="o">=</span> <span class="n">GCConfig</span><span class="o">::</span><span class="n">arguments</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">create_heap</span><span class="p">();</span>
-</code></pre></div><p>that then instantiates a new <code>ZCollectedHeap</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">CollectedHeap</span><span class="o">*</span> <span class="n">ZArguments</span><span class="o">::</span><span class="n">create_heap</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="n">new</span> <span class="n">ZCollectedHeap</span><span class="p">();</span>
-<span class="p">}</span>
-</code></pre></div><h3 id="zgc-heap-structure">ZGC Heap Structure</h3>
-<p>A <code>ZCollectedHeap</code> is composed of:</p>
-<ul>
-<li><code>ZHeap</code></li>
-<li><code>ZDriver</code></li>
-<li><code>ZDirector</code></li>
-<li><code>ZRuntimeWorkers</code></li>
-</ul>
-]]></content>
-		</item>
-		
 	</channel>
 </rss>

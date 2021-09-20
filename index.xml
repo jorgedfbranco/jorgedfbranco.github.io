@@ -60,18 +60,5 @@ Examples of such calls and their respective return values would be:
 &lt;p&gt;Binary search allows us to quickly &amp;ndash; in &lt;code&gt;O(lg n)&lt;/code&gt; time &amp;ndash; find the index of a value &lt;code&gt;v&lt;/code&gt; in a sorted array &lt;code&gt;A&lt;/code&gt;. In other words, binary search is valuable because it spares us from having to exhaustively look for a value in the array (which would have been an &lt;code&gt;O(n)&lt;/code&gt; operation), as long as we know the array to be sorted.&lt;/p&gt;</description>
     </item>
     
-    <item>
-      <title></title>
-      <link>https://jorgedfbranco.github.io/posts/zgc-codebase/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://jorgedfbranco.github.io/posts/zgc-codebase/</guid>
-      <description>ZGC Codebase Study Notes ZGC Heap When using ZGC, the VM will create a ZCollectedHeap (that inherits from CollectedHeap) class instance.
-Creation The heap is created in Universe.initialize_heap():
-_collectedHeap = GCConfig::arguments()-&amp;gt;create_heap(); that then instantiates a new ZCollectedHeap:
-CollectedHeap* ZArguments::create_heap() { return new ZCollectedHeap(); } ZGC Heap Structure A ZCollectedHeap is composed of:
- ZHeap ZDriver ZDirector ZRuntimeWorkers  </description>
-    </item>
-    
   </channel>
 </rss>

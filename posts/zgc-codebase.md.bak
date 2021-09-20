@@ -1,0 +1,30 @@
+# ZGC Codebase Study Notes
+
+## ZGC Heap
+
+When using ZGC, the VM will create a `ZCollectedHeap` (that inherits from `CollectedHeap`) class instance.
+
+### Creation
+
+The heap is created in `Universe.initialize_heap()`:
+
+```c
+_collectedHeap = GCConfig::arguments()->create_heap();
+```
+
+that then instantiates a new `ZCollectedHeap`:
+
+```c
+CollectedHeap* ZArguments::create_heap() {
+  return new ZCollectedHeap();
+}
+```
+
+### ZGC Heap Structure
+
+A `ZCollectedHeap` is composed of:
+
+* `ZHeap`
+* `ZDriver`
+* `ZDirector`
+* `ZRuntimeWorkers`
