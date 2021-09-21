@@ -10,11 +10,11 @@
 		<atom:link href="https://jorgedfbranco.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
 		
 		<item>
-			<title>Thread-Local Allocation Buffers In The Hotspot VM</title>
-			<link>https://jorgedfbranco.github.io/posts/thread-local-allocation-buffers-in-the-hotspot-vm/</link>
+			<title>HotSpot JVM: Thread-Local Allocation Buffers</title>
+			<link>https://jorgedfbranco.github.io/posts/hotspot-jvm-thread-local-allocation-buffers/</link>
 			<pubDate>Mon, 20 Sep 2021 00:00:00 +0000</pubDate>
 			
-			<guid>https://jorgedfbranco.github.io/posts/thread-local-allocation-buffers-in-the-hotspot-vm/</guid>
+			<guid>https://jorgedfbranco.github.io/posts/hotspot-jvm-thread-local-allocation-buffers/</guid>
 			<description>Introduction Applications developed in managed languages running on top of a virtual-machine like the JVM or the CLR tend to create inordinate amounts of objects, as developers are freed from having to manually take care of managing the created object&amp;rsquo;s life-cycles. If not for the occasional object allocation optimized away by a smart compiler, most object creation involves the allocation of memory in the application&amp;rsquo;s heap.
 Given that nowadays most applications are multi-threaded, allocating an object on the heap can be troublesome &amp;ndash; multiple threads may attempt to do it concurrently and unless some sort of synchronization logic is involved, malign data-races are bound to happen.</description>
 			<content type="html"><![CDATA[<h2 id="introduction">Introduction</h2>
@@ -91,12 +91,13 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 </span><span class="c1"></span>
     <span class="p">...</span>
 <span class="p">}</span>
-</code></pre></div><p>and roughly speaking, it will contain at any point three pointers:</p>
+</code></pre></div><p>from which the most important fields are:</p>
 <ul>
-<li><code>_start</code> - a pointer to the starting address of the region of this TLAB;</li>
-<li><code>_top</code> - a pointer to the starting address of the next allocated object in this TLAB;</li>
-<li><code>_end</code> - a pointer to the end of the region of this TLAB.</li>
+<li><code>_start</code> - a pointer to the starting address of this TLAB;</li>
+<li><code>_top</code> - a pointer to the address of the last allocation, or equivalently, where the next object is going to be allocated on this TLAB;</li>
+<li><code>_end</code> - a pointer to the end of this TLAB.</li>
 </ul>
+<p>As we&rsquo;re going to see in the next section, allocations on a TLAB should be a relatively inexpensive operation:</p>
 <h4 id="allocation">Allocation</h4>
 <p>Allocation happens in a relatively straightforward way: as long as there&rsquo;s enough space in the TLAB, allocating <code>size</code> amount of memory out of a TLAB can be as simple as bumping up <code>_top</code> by <code>size</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kr">inline</span> <span class="n">HeapWord</span><span class="o">*</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">allocate</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
