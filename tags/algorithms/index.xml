@@ -19,7 +19,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
     </item>
     
     <item>
-      <title>Implementing a Scheduler in Java</title>
+      <title>Implementing a scheduler in Java</title>
       <link>https://jorgedfbranco.github.io/posts/implementing-a-scheduler-in-java/</link>
       <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
       

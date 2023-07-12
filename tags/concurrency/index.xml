@@ -9,7 +9,7 @@
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
     <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://jorgedfbranco.github.io/tags/concurrency/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Implementing a Scheduler in Java</title>
+      <title>Implementing a scheduler in Java</title>
       <link>https://jorgedfbranco.github.io/posts/implementing-a-scheduler-in-java/</link>
       <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
       

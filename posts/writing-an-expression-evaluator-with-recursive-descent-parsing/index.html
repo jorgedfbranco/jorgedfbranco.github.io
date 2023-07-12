@@ -12,7 +12,7 @@
 Examples of such calls and their respective return values would be:
  evalExpr(&quot;1 &#43; 2 * 3 / 4 - 1&quot;) = 1. evalExpr(&quot;1 * (2 &#43; 3)&quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&rsquo;s Shunting-yard algorithm, but in this article we&rsquo;re going to focus on solving it with a recursive-descent parser, as it&rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language."><meta itemprop="datePublished" content="2021-08-03T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2021-08-03T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1713">
+<meta itemprop="wordCount" content="1710">
 <meta itemprop="keywords" content="java,algorithms,parser,recursive-descent,compilers," /><meta property="og:title" content="Writing an Expression Evaluator with Recursive-Descent Parsing" />
 <meta property="og:description" content="Introduction Let&rsquo;s consider the problem of implementing a function evalExpr(str): int that, given an arbitrary well-formed mathematical expression, calculates its value.
 Examples of such calls and their respective return values would be:
@@ -36,7 +36,7 @@ Examples of such calls and their respective return values would be:
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>Writing an Expression Evaluator with Recursive-Descent Parsing</title>
-	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.5425597751a427b0726de11f911921f1a4d38dd73b481894167d2cf91f77780e.css" integrity="sha256-VCVZd1GkJ7BybeEfkRkh8aTTjdc7SBiUFn0s+R93eA4=" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.62f4878480833b817e8d7d68ab44dfa028a86fc89dace825f50143dc38de95ce.css" integrity="sha256-YvSHhICDO4F+jX1oq0TfoCiob8idrOgl9QFD3Djelc4=" crossorigin="anonymous">
 	
 </head>
 
@@ -293,8 +293,7 @@ Term -&gt; '(' Expr ')'
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div><h2 id="leetcode-problems">LeetCode Problems<a href="#leetcode-problems" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
-<h3 id="ternary-expression-parser">Ternary Expression Parser<a href="#ternary-expression-parser" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>Link: <a href="https://leetcode.com/problems/ternary-expression-parser">https://leetcode.com/problems/ternary-expression-parser</a></p>
+<h3 id="ternary-expression-parserhttpsleetcodecomproblemsternary-expression-parser"><a href="https://leetcode.com/problems/ternary-expression-parser">Ternary Expression Parser</a><a href="#ternary-expression-parserhttpsleetcodecomproblemsternary-expression-parser" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>We&rsquo;re asked to implement a ternary operator expression parser. The grammar is quite simple, but we need to be aware the return type of the function can be either an integer or a boolean.</p>
 <p>Grammar:</p>
 <pre><code>S -&gt; bool ('?' S ':' S)?
@@ -336,18 +335,17 @@ Term -&gt; '(' Expr ')'
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div><h3 id="parsing-a-boolean-expression">Parsing A Boolean Expression<a href="#parsing-a-boolean-expression" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<p>Link: <a href="https://leetcode.com/problems/parsing-a-boolean-expression/">https://leetcode.com/problems/parsing-a-boolean-expression/</a></p>
+</code></pre></div><h3 id="parsing-a-boolean-expressionhttpsleetcodecomproblemsparsing-a-boolean-expression"><a href="https://leetcode.com/problems/parsing-a-boolean-expression/">Parsing A Boolean Expression</a><a href="#parsing-a-boolean-expressionhttpsleetcodecomproblemsparsing-a-boolean-expression" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>The grammar for this problem is:</p>
 <pre><code>A -&gt; '!(' A ')'
    | ('|(' | '&amp;(') A (',' A)*) ')'
    | ('t' | 'f')
-</code></pre><h3 id="basic-calculator-i-ii--iii">Basic Calculator I, II &amp; III<a href="#basic-calculator-i-ii--iii" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
-<h4 id="httpsleetcodecomproblemsbasic-calculatorhttpsleetcodecomproblemsbasic-calculator"><a href="https://leetcode.com/problems/basic-calculator/">https://leetcode.com/problems/basic-calculator/</a><a href="#httpsleetcodecomproblemsbasic-calculatorhttpsleetcodecomproblemsbasic-calculator" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+</code></pre><h3 id="basic-calculators">Basic Calculators<a href="#basic-calculators" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<h4 id="basic-calculatorhttpsleetcodecomproblemsbasic-calculator"><a href="https://leetcode.com/problems/basic-calculator/">Basic Calculator</a><a href="#basic-calculatorhttpsleetcodecomproblemsbasic-calculator" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p>This problem requires a simpler grammar to the one developed in this article, as it only needs to support additions or subtractions. Our grammar would work as well, though.</p>
-<h4 id="httpsleetcodecomproblemsbasic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii"><a href="https://leetcode.com/problems/basic-calculator-ii">https://leetcode.com/problems/basic-calculator-ii/</a><a href="#httpsleetcodecomproblemsbasic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<h4 id="basic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii"><a href="https://leetcode.com/problems/basic-calculator-ii">Basic Calculator II</a><a href="#basic-calculator-iihttpsleetcodecomproblemsbasic-calculator-ii" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p>We can use the very same grammar we developed in this article.</p>
-<h4 id="httpsleetcodecomproblemsbasic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii"><a href="https://leetcode.com/problems/basic-calculator-iii">https://leetcode.com/problems/basic-calculator-iii/</a><a href="#httpsleetcodecomproblemsbasic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
+<h4 id="basic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii"><a href="https://leetcode.com/problems/basic-calculator-iii">Basic Calculator III</a><a href="#basic-calculator-iiihttpsleetcodecomproblemsbasic-calculator-iii" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p>Another rehash of <code>Basic Calculator II</code> as far as I understand it.</p>
 
 			</div>
@@ -356,7 +354,7 @@ Term -&gt; '(' Expr ')'
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://jorgedfbranco.github.io/tags/java">java</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/algorithms">algorithms</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/parser">parser</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/recursive-descent">recursive-descent</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/compilers">compilers</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1713 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>1710 Words</p>
 
 			</footer>
 		</article>
@@ -373,7 +371,7 @@ Term -&gt; '(' Expr ')'
 	</main>
 
 	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
-		<p>&copy; 2021 <a href="https://jorgedfbranco.github.io">Jorge Branco</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>&copy; 2023 <a href="https://jorgedfbranco.github.io">Jorge Branco</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
 		<p>
 			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://jorgedfbranco.github.io/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
 		</p>

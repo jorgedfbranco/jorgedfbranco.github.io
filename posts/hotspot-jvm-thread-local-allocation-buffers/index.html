@@ -33,7 +33,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 	<link rel="shortcut icon" href="/favicon.ico">
 
 	<title>HotSpot JVM: Thread-Local Allocation Buffers</title>
-	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.5425597751a427b0726de11f911921f1a4d38dd73b481894167d2cf91f77780e.css" integrity="sha256-VCVZd1GkJ7BybeEfkRkh8aTTjdc7SBiUFn0s+R93eA4=" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.62f4878480833b817e8d7d68ab44dfa028a86fc89dace825f50143dc38de95ce.css" integrity="sha256-YvSHhICDO4F+jX1oq0TfoCiob8idrOgl9QFD3Djelc4=" crossorigin="anonymous">
 	
 </head>
 
@@ -84,7 +84,8 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 <h3 id="thread-implementation">Thread Implementation<a href="#thread-implementation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
 <p>The base thread definition / implementation in HotSpot is at <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/runtime/thread.hpp">thread.hpp</a> / <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/runtime/thread.cpp">thread.cpp</a>. It&rsquo;s quite a fat class but we&rsquo;ll keep it simple by only looking at TLAB-related fields / methods:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">Thread</span><span class="o">:</span> <span class="k">public</span> <span class="n">ThreadShadow</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="k">class</span> <span class="nc">Thread</span><span class="o">:</span> <span class="k">public</span> <span class="n">ThreadShadow</span> <span class="p">{</span>
     <span class="p">...</span>
     <span class="k">private</span><span class="o">:</span>
         <span class="n">ThreadLocalAllocBuffer</span> <span class="n">_tlab</span><span class="p">;</span>                 <span class="c1">// Thread-local eden
@@ -95,13 +96,15 @@ Given that nowadays most applications are multi-threaded, allocating an object o
         <span class="kt">void</span> <span class="nf">initialize_tlab</span><span class="p">();</span>
     <span class="p">...</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/runtime/thread.hpp#L132">thread.hpp:132</a></p>
 </span>
 </div>
 <p>When the <code>Thread</code> class is first created, an un-initialized TLAB structure is inlined in the <code>Thread</code> object. But it will only get initialized the moment a call to <code>JavaThread::run()</code> is performed:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// The main routine called by a new Java thread. This isn&#39;t overridden
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="c1">// The main routine called by a new Java thread. This isn&#39;t overridden
 </span><span class="c1">// by subclasses, instead different subclasses define a different &#34;entry_point&#34;
 </span><span class="c1">// which defines the actual logic for that kind of thread.
 </span><span class="c1"></span><span class="kt">void</span> <span class="n">JavaThread</span><span class="o">::</span><span class="n">run</span><span class="p">()</span> <span class="p">{</span>
@@ -109,23 +112,27 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 </span><span class="c1"></span>    <span class="n">initialize_tlab</span><span class="p">();</span>
     <span class="p">...</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/runtime/thread.cpp#L1229">thread.cpp:1229</a></p>
 </span>
 </div>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">Thread</span><span class="o">::</span><span class="n">initialize_tlab</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="kt">void</span> <span class="n">Thread</span><span class="o">::</span><span class="n">initialize_tlab</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">UseTLAB</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">tlab</span><span class="p">().</span><span class="n">initialize</span><span class="p">();</span>
     <span class="p">}</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/runtime/thread.cpp#L284">thread.cpp:284</a></p>
 </span>
 </div>
 <p>And, as expected, the moment the thread is killed, the TLAB is also destroyed (retired):</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">JavaThread</span><span class="o">::</span><span class="n">exit</span><span class="p">(</span><span class="kt">bool</span> <span class="n">destroy_vm</span><span class="p">,</span> <span class="n">ExitType</span> <span class="n">exit_type</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="kt">void</span> <span class="n">JavaThread</span><span class="o">::</span><span class="n">exit</span><span class="p">(</span><span class="kt">bool</span> <span class="n">destroy_vm</span><span class="p">,</span> <span class="n">ExitType</span> <span class="n">exit_type</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">UseTLAB</span><span class="p">)</span> <span class="p">{</span>
@@ -134,6 +141,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 
     <span class="p">...</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/runtime/thread.cpp#L1320">thread.cpp:1320</a></p>
 </span>
@@ -143,7 +151,8 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 <h4 id="class-definition">Class Definition<a href="#class-definition" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p>A TLAB is represented in HotSpot by the <code>ThreadLocalAllocBuffer</code> class:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">ThreadLocalAllocBuffer</span><span class="o">:</span> <span class="k">public</span> <span class="n">CHeapObj</span><span class="o">&lt;</span><span class="n">mtThread</span><span class="o">&gt;</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="k">class</span> <span class="nc">ThreadLocalAllocBuffer</span><span class="o">:</span> <span class="k">public</span> <span class="n">CHeapObj</span><span class="o">&lt;</span><span class="n">mtThread</span><span class="o">&gt;</span> <span class="p">{</span>
 <span class="k">private</span><span class="o">:</span>
     <span class="n">HeapWord</span><span class="o">*</span> <span class="n">_start</span><span class="p">;</span>                              <span class="c1">// address of TLAB
 </span><span class="c1"></span>    <span class="n">HeapWord</span><span class="o">*</span> <span class="n">_top</span><span class="p">;</span>                                <span class="c1">// address after last allocation
@@ -157,6 +166,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 </span><span class="c1"></span>    <span class="n">size_t</span>    <span class="n">_bytes_since_last_sample_point</span><span class="p">;</span>      <span class="c1">// bytes since last sample point.
 </span><span class="c1"></span>
     <span class="p">...</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/gc/shared/threadLocalAllocBuffer.hpp#L46">threadLocalAllocBuffer.hpp:46</a></p>
 </span>
@@ -171,7 +181,8 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 <h4 id="allocation">Allocation<a href="#allocation" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p>Allocation happens in a relatively straightforward way: as long as there&rsquo;s enough space in the TLAB, allocating <code>size</code> amount of memory out of a TLAB can be as simple as bumping up <code>_top</code> by <code>size</code>:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kr">inline</span> <span class="n">HeapWord</span><span class="o">*</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">allocate</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="kr">inline</span> <span class="n">HeapWord</span><span class="o">*</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">allocate</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">HeapWord</span><span class="o">*</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">top</span><span class="p">();</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">pointer_delta</span><span class="p">(</span><span class="n">end</span><span class="p">(),</span> <span class="n">obj</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">set_top</span><span class="p">(</span><span class="n">obj</span> <span class="o">+</span> <span class="n">size</span><span class="p">);</span>
@@ -179,13 +190,15 @@ Given that nowadays most applications are multi-threaded, allocating an object o
   <span class="p">}</span>
   <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/gc/shared/threadLocalAllocBuffer.inline.hpp#L38">threadLocalAllocBuffer.inline.hpp:38</a></p>
 </span>
 </div>
 <p>In the bytecode interpreter, for instance, when an allocation request comes in, here&rsquo;s how <code>ThreadLocalAllocBuffer::allocate()</code> ends up invoked:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">BytecodeInterpreter</span><span class="o">::</span><span class="n">run</span><span class="p">(</span><span class="n">interpreterState</span> <span class="n">istate</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="kt">void</span> <span class="n">BytecodeInterpreter</span><span class="o">::</span><span class="n">run</span><span class="p">(</span><span class="n">interpreterState</span> <span class="n">istate</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
     <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="p">...</span>
@@ -206,20 +219,24 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 </span><span class="c1"></span>                    <span class="c1">// with stores that publish the new object.
 </span><span class="c1"></span>                    <span class="n">OrderAccess</span><span class="o">::</span><span class="n">storestore</span><span class="p">();</span>
                     <span class="p">...</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/interpreter/zero/bytecodeInterpreter.cpp#L405">bytecodeInterpreter.cpp:405</a></p>
 </span>
 </div>
 <p>otherwise, a slower and costlier path is followed that ends up performing direct allocations on the Heap itself:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// Slow case allocation
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="c1">// Slow case allocation
 </span><span class="c1"></span><span class="n">CALL_VM</span><span class="p">(</span><span class="n">InterpreterRuntime</span><span class="o">::</span><span class="n">_new</span><span class="p">(</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">METHOD</span><span class="o">-&gt;</span><span class="n">constants</span><span class="p">(),</span> <span class="n">index</span><span class="p">),</span> <span class="n">handle_exception</span><span class="p">);</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/interpreter/zero/bytecodeInterpreter.cpp#L1870">bytecodeInterpreter.cpp:1870</a></p>
 </span>
 </div>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">JRT_ENTRY</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span> <span class="n">InterpreterRuntime</span><span class="o">::</span><span class="n">_new</span><span class="p">(</span><span class="n">JavaThread</span><span class="o">*</span> <span class="n">current</span><span class="p">,</span> <span class="n">ConstantPool</span><span class="o">*</span> <span class="n">pool</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">))</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="n">JRT_ENTRY</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span> <span class="n">InterpreterRuntime</span><span class="o">::</span><span class="n">_new</span><span class="p">(</span><span class="n">JavaThread</span><span class="o">*</span> <span class="n">current</span><span class="p">,</span> <span class="n">ConstantPool</span><span class="o">*</span> <span class="n">pool</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">))</span>
     <span class="n">Klass</span><span class="o">*</span> <span class="n">k</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">klass_at</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">CHECK</span><span class="p">);</span>
     <span class="n">InstanceKlass</span><span class="o">*</span> <span class="n">klass</span> <span class="o">=</span> <span class="n">InstanceKlass</span><span class="o">::</span><span class="n">cast</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
 
@@ -227,17 +244,20 @@ Given that nowadays most applications are multi-threaded, allocating an object o
     <span class="n">oop</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">klass</span><span class="o">-&gt;</span><span class="n">allocate_instance</span><span class="p">(</span><span class="n">CHECK</span><span class="p">);</span>
     <span class="p">...</span>
 <span class="n">JRT_END</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/interpreter/interpreterRuntime.cpp#L217">interpreterRuntime.cpp:217</a></p>
 </span>
 </div>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">instanceOop</span> <span class="n">InstanceKlass</span><span class="o">::</span><span class="n">allocate_instance</span><span class="p">(</span><span class="n">TRAPS</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="n">instanceOop</span> <span class="n">InstanceKlass</span><span class="o">::</span><span class="n">allocate_instance</span><span class="p">(</span><span class="n">TRAPS</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">size_helper</span><span class="p">();</span>
 
     <span class="p">...</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">instanceOop</span><span class="p">)</span><span class="n">Universe</span><span class="o">::</span><span class="n">heap</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">obj_allocate</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">CHECK_NULL</span><span class="p">);</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/oops/instanceKlass.cpp#L1413">instanceKlass.cpp:1413</a></p>
 </span>
@@ -245,7 +265,8 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 <h4 id="vm-parameters">VM Parameters<a href="#vm-parameters" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p>All the VM parameters related to TLABs, such as <code>UseTLAB</code>, <code>ResizeTLAB</code>, <code>ZeroTLAB</code>, <code>MinTLABSize</code>, <code>TLABSize</code>, may be found at <code>tlab_globals.cpp</code>:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">    <span class="p">...</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+    <span class="p">...</span>
     <span class="cm">/* Thread Local Allocation Buffer */</span>                                      \
                                                                               \
     <span class="n">product</span><span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="n">UseTLAB</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span>                                              \
@@ -269,6 +290,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
             <span class="s">&#34;Starting TLAB size (in bytes); zero means set ergonomically&#34;</span><span class="p">)</span>    \
             <span class="n">constraint</span><span class="p">(</span><span class="n">TLABSizeConstraintFunc</span><span class="p">,</span><span class="n">AfterMemoryInit</span><span class="p">)</span>                \
     <span class="p">...</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/gc/shared/tlab_globals.hpp#L38">tlab_globals.hpp:38</a></p>
 </span>
@@ -277,7 +299,8 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 <p>The allocation of the region of memory used by a TLAB is, and maybe surprisingly, always external to this class. It&rsquo;s always up to the caller of <code>ThreadLocalAllocBuffer</code> to correctly allocate a memory region <code>R</code> and call <code>ThreadLocalAllocBuffer::fill(start, top, new_size)</code> to make the TLAB be aware of, and use, <code>R</code>.</p>
 <p>In pratical terms, the first time a memory region is associated with a TLAB is when a thread&rsquo;s first allocation request comes in and fails:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">HeapWord</span><span class="o">*</span> <span class="n">MemAllocator</span><span class="o">::</span><span class="n">allocate_inside_tlab</span><span class="p">(</span><span class="n">Allocation</span><span class="o">&amp;</span> <span class="n">allocation</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="n">HeapWord</span><span class="o">*</span> <span class="n">MemAllocator</span><span class="o">::</span><span class="n">allocate_inside_tlab</span><span class="p">(</span><span class="n">Allocation</span><span class="o">&amp;</span> <span class="n">allocation</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
     <span class="c1">// Try allocating from an existing TLAB.
 </span><span class="c1"></span>    <span class="n">HeapWord</span><span class="o">*</span> <span class="n">mem</span> <span class="o">=</span> <span class="n">_thread</span><span class="o">-&gt;</span><span class="n">tlab</span><span class="p">().</span><span class="n">allocate</span><span class="p">(</span><span class="n">_word_size</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">mem</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
@@ -297,6 +320,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
     <span class="n">tlab</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span><span class="n">mem</span><span class="p">,</span> <span class="n">mem</span> <span class="o">+</span> <span class="n">_word_size</span><span class="p">,</span> <span class="n">allocation</span><span class="p">.</span><span class="n">_allocated_tlab_size</span><span class="p">);</span>
     <span class="k">return</span> <span class="n">mem</span><span class="p">;</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/gc/shared/memAllocator.cpp#L268">memAllocator.cpp:268</a></p>
 </span>
@@ -305,7 +329,8 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 <h4 id="sizing">Sizing<a href="#sizing" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p>The TLAB size can be hard-coded and passed as a JVM parameter (<code>TLABSize</code>), or calculated on-the-fly:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">size_t</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">initial_desired_size</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="n">size_t</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">initial_desired_size</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">size_t</span> <span class="n">init_sz</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="n">TLABSize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
@@ -320,6 +345,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
   <span class="n">init_sz</span> <span class="o">=</span> <span class="n">MIN2</span><span class="p">(</span><span class="n">MAX2</span><span class="p">(</span><span class="n">init_sz</span><span class="p">,</span> <span class="n">min_size</span><span class="p">()),</span> <span class="n">max_size</span><span class="p">());</span>
   <span class="k">return</span> <span class="n">init_sz</span><span class="p">;</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/gc/shared/threadLocalAllocBuffer.cpp#L268">threadLocalAllocBuffer.cpp:268</a></p>
 </span>
@@ -327,7 +353,8 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 <h4 id="death">Death<a href="#death" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h4>
 <p>Finally, what happens when a thread is about do die? It turns out that whatever space is still unused will be used to allocate a dummy integer array:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">retire</span><span class="p">(</span><span class="n">ThreadLocalAllocStats</span><span class="o">*</span> <span class="n">stats</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="kt">void</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">retire</span><span class="p">(</span><span class="n">ThreadLocalAllocStats</span><span class="o">*</span> <span class="n">stats</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">end</span><span class="p">()</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
@@ -336,23 +363,27 @@ Given that nowadays most applications are multi-threaded, allocating an object o
       <span class="n">initialize</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/gc/shared/threadLocalAllocBuffer.cpp#L137">threadLocalAllocBuffer.cpp:137</a></p>
 </span>
 </div>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">insert_filler</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="kt">void</span> <span class="n">ThreadLocalAllocBuffer</span><span class="o">::</span><span class="n">insert_filler</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">top</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">hard_end</span><span class="p">())</span> <span class="p">{</span>
       <span class="n">Universe</span><span class="o">::</span><span class="n">heap</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">fill_with_dummy_object</span><span class="p">(</span><span class="n">top</span><span class="p">(),</span> <span class="n">hard_end</span><span class="p">(),</span> <span class="nb">true</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/gc/shared/threadLocalAllocBuffer.cpp#L119">threadLocalAllocBuffer.cpp:119</a></p>
 </span>
 </div>
 <p><code>CollectedHeap::fill_with_dummy_object()</code> will, after a sequence of calls end up at:</p>
 <div style="background: linear-gradient(90deg, rgba(73,79,92,1) 60%, rgba(44,62,80,1) 80%);">
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">CollectedHeap</span><span class="o">::</span><span class="n">fill_with_array</span><span class="p">(</span><span class="n">HeapWord</span><span class="o">*</span> <span class="n">start</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">words</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">zap</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="kt">void</span> <span class="n">CollectedHeap</span><span class="o">::</span><span class="n">fill_with_array</span><span class="p">(</span><span class="n">HeapWord</span><span class="o">*</span> <span class="n">start</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">words</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">zap</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
     <span class="k">const</span> <span class="n">size_t</span> <span class="n">payload_size</span> <span class="o">=</span> <span class="n">words</span> <span class="o">-</span> <span class="n">filler_array_hdr_size</span><span class="p">();</span>
     <span class="k">const</span> <span class="n">size_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">payload_size</span> <span class="o">*</span> <span class="n">HeapWordSize</span> <span class="o">/</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">jint</span><span class="p">);</span>
@@ -360,6 +391,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
     <span class="n">ObjArrayAllocator</span> <span class="nf">allocator</span><span class="p">(</span><span class="n">Universe</span><span class="o">::</span><span class="n">intArrayKlassObj</span><span class="p">(),</span> <span class="n">words</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">len</span><span class="p">,</span> <span class="cm">/* do_zero */</span> <span class="nb">false</span><span class="p">);</span>
     <span class="n">allocator</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">start</span><span class="p">);</span>
 <span class="p">}</span>
+
 </code></pre></div><span style="font-family: Roboto; display: block; margin-top: -16px; margin-left: 8px; text-align: right;">
 <p><i>Source File</i>: <a href="https://github.com/openjdk/jdk/blob/jdk-18%2B15/src/hotspot/share/gc/shared/collectedHeap.cpp#L425">collectedHeap.cpp:425</a></p>
 </span>
@@ -386,7 +418,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 		</article>
 		<div class="post-nav thin">
 			<a class="prev-post" href="https://jorgedfbranco.github.io/posts/implementing-a-scheduler-in-java/">
-				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Implementing a Scheduler in Java</span>
+				<span class="post-nav-label">Older&nbsp;<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span><br><span>Implementing a scheduler in Java</span>
 			</a>
 		</div>
 		<div id="comments" class="thin">
@@ -394,7 +426,7 @@ Given that nowadays most applications are multi-threaded, allocating an object o
 	</main>
 
 	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
-		<p>&copy; 2021 <a href="https://jorgedfbranco.github.io">Jorge Branco</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>&copy; 2023 <a href="https://jorgedfbranco.github.io">Jorge Branco</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
 		<p>
 			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://jorgedfbranco.github.io/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
 		</p>
