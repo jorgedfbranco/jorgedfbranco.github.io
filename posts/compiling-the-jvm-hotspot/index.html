@@ -11,7 +11,7 @@
 <meta itemprop="description" content="Introduction As I&rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.
 Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&rsquo;s wrong."><meta itemprop="datePublished" content="2021-07-13T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2021-07-13T00:00:00+00:00" />
-<meta itemprop="wordCount" content="551">
+<meta itemprop="wordCount" content="549">
 <meta itemprop="keywords" content="java,jvm,hotspot," /><meta property="og:title" content="Setting up the JVM HotSpot in CLion" />
 <meta property="og:description" content="Introduction As I&rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.
 Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&rsquo;s wrong." />
@@ -121,7 +121,7 @@ add_definitions(-DLINUX=1)
 
 file(GLOB_RECURSE SOURCE_FILES &quot;*.cpp&quot; &quot;*.hpp&quot; &quot;*.c&quot; &quot;*.h&quot;)
 add_executable(openjdk_21 ${SOURCE_FILES})
-</code></pre><p>This will be enough to be able to move around the project, to have basic highlighting and allowing you to use features such as &ldquo;go to definition&rdquo;, &ldquo;go to declaration&rdquo;, &ldquo;go to usages&rdquo;, etc.</p>
+</code></pre><p>This will be enough to give you basic highlighting without too many errors and to allow you to use features such as &ldquo;go to definition&rdquo;, &ldquo;go to declaration&rdquo;, &ldquo;go to usages&rdquo;, etc.</p>
 <h2 id="references">References<a href="#references" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
 <ul>
 <li><a href="https://github.com/openjdk/jdk/blob/master/doc/building.md">jdk/doc/building.md - Building the JDK</a></li>
@@ -133,7 +133,7 @@ add_executable(openjdk_21 ${SOURCE_FILES})
 				<p>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://jorgedfbranco.github.io/tags/java">java</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/jvm">jvm</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/hotspot">hotspot</a></span>
 				</p>
-				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>551 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>549 Words</p>
 
 			</footer>
 		</article>

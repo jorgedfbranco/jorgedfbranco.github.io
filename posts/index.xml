@@ -1093,7 +1093,7 @@ add_definitions(-DLINUX=1)
 
 file(GLOB_RECURSE SOURCE_FILES &quot;*.cpp&quot; &quot;*.hpp&quot; &quot;*.c&quot; &quot;*.h&quot;)
 add_executable(openjdk_21 ${SOURCE_FILES})
-</code></pre><p>This will be enough to be able to move around the project, to have basic highlighting and allowing you to use features such as &ldquo;go to definition&rdquo;, &ldquo;go to declaration&rdquo;, &ldquo;go to usages&rdquo;, etc.</p>
+</code></pre><p>This will be enough to give you basic highlighting without too many errors and to allow you to use features such as &ldquo;go to definition&rdquo;, &ldquo;go to declaration&rdquo;, &ldquo;go to usages&rdquo;, etc.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://github.com/openjdk/jdk/blob/master/doc/building.md">jdk/doc/building.md - Building the JDK</a></li>
