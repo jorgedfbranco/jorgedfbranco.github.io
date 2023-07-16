@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+<meta itemprop="name" content="Setting up the JVM HotSpot in CLion">
+<meta itemprop="description" content="Introduction As I&rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.
+Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&rsquo;s wrong."><meta itemprop="datePublished" content="2021-07-13T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-07-13T00:00:00+00:00" />
+<meta itemprop="wordCount" content="551">
+<meta itemprop="keywords" content="java,jvm,hotspot," /><meta property="og:title" content="Setting up the JVM HotSpot in CLion" />
+<meta property="og:description" content="Introduction As I&rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.
+Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&rsquo;s wrong." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jorgedfbranco.github.io/posts/compiling-the-jvm-hotspot/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-07-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-07-13T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Setting up the JVM HotSpot in CLion"/>
+<meta name="twitter:description" content="Introduction As I&rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.
+Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&rsquo;s wrong."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>Setting up the JVM HotSpot in CLion</title>
+	<link rel="stylesheet" href="https://jorgedfbranco.github.io/css/style.min.2ae7def6ecadfb3e188d403e53a793364fd1aad51ddd0fb41429cc64289e8443.css" integrity="sha256-Kufe9uyt+z4YjUA+U6eTNk/RqtUd3Q+0FCnMZCiehEM=" crossorigin="anonymous">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a style="font-weight: 400;" href="https://jorgedfbranco.github.io">Jorge Branco&#39;s Blog</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					
+
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://github.com/jorgedfbranco" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://linkedin.com/in/jorgedfbranco" target="_blank" rel="noopener me" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Jul 13, 2021</span></div>
+				<h1>Setting up the JVM HotSpot in CLion</h1>
+			</header>
+			<div class="content">
+				<h2 id="introduction">Introduction<a href="#introduction" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<p>As I&rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.</p>
+<p>Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&rsquo;s wrong. In the worst case scenario, a simple google search will most likely suffice. But as there are at least some things we should be wary about, I&rsquo;m writing this simple tutorial down. In case you get stuck or if you need a more thorough guide, I highly recommend <code>Building the JDK</code> (references).</p>
+<p>Getting basic syntax highlighting going on for CLion will require defining a <code>CMakeLists.txt</code> file. There will still be highlighting errors here and there but navigation should still work reasonably well most of the time.</p>
+<h3 id="1-downloading-a-recent-version-of-the-jdk">1. Downloading a recent version of the JDK<a href="#1-downloading-a-recent-version-of-the-jdk" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>To build the JDK you will need to have one already installed in your machine. This will be called this project&rsquo;s <code>bootstrap JDK</code>. It should be as recent as possible: if you want to build <code>JDK X</code>, you will need a <code>JDK X</code> or if that is yet unavailable, <code>JDK X-1</code>.</p>
+<h3 id="2-cloning-the-repository">2. Cloning the repository<a href="#2-cloning-the-repository" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>We&rsquo;ll then clone the repo:</p>
+<p><code>git clone https://github.com/openjdk/jdk.git &amp;&amp; cd jdk</code></p>
+<h3 id="3-installing-all-the-needed-dependencies">3. Installing all the needed dependencies<a href="#3-installing-all-the-needed-dependencies" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>The JDK ships with the <code>configure</code> tool, that can be run with</p>
+<p><code>bash configure --with-boot-jdk=&lt;bootstrap_jdk_path&gt;</code></p>
+<p>allowing you to check what dependencies are currently missing in your system. When executed, it and it will go through the list of HotSpot dependencies and will throw an error the first time it finds one that isn&rsquo;t installed:</p>
+<blockquote>
+<p>configure: error: Could not find fontconfig! You might be able to fix this by running &lsquo;sudo apt-get install libfontconfig1-dev&rsquo;.</p>
+</blockquote>
+<p>It&rsquo;s up to you then to install it with the suggested <code>apt-get</code> snippet and re-run <code>configure</code> until it&rsquo;s finally able to run without errors.</p>
+<h3 id="4-building-the-jdk">4. Building the JDK<a href="#4-building-the-jdk" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>Now, at last, you can build the JDK:</p>
+<p><code>make images</code></p>
+<ul>
+<li>
+<p>If it complains that it doesn&rsquo;t recognize your operating system, make sure that you are checked out on the master branch and not on an old commit, corresponding to an older JDK. The problem is not the older JDK, but that its commits most likely correspond to a time when the current operating system you&rsquo;re running in at its current version still did not exist. So, either make the build out of a relatively recent commit or follow the tip given here: <a href="https://stackoverflow.com/questions/14285820/os-not-supported-error-while-building-hotspot">https://stackoverflow.com/questions/14285820/os-not-supported-error-while-building-hotspot</a>.</p>
+</li>
+<li>
+<p>It may also complain about having multiple options, and having to choose one. You can do it through the <code>CONF</code> parameter, as shown here: <code>make images CONF=linux-x86_64-server-release</code>.</p>
+</li>
+</ul>
+<h3 id="5-opening-hotspot-with-clion">5. Opening HotSpot with CLion<a href="#5-opening-hotspot-with-clion" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h3>
+<p>In order to get CLion to index HotSpot, we&rsquo;ll have to create a <code>CMakeLists.txt</code> file on the root of the project:</p>
+<pre><code>cmake_minimum_required(VERSION 3.20)
+project(openjdk_21)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(
+        src/hotspot/cpu/x86
+        src/hotspot/os/linux
+        src/hotspot/os_cpu/linux_x86
+        src/hotspot/share
+        src/hotspot/share/precompiled
+        src/hotspot/share/include
+        src/java.base/unix/native/include
+        src/java.base/share/native/include
+)
+
+add_definitions(-DINCLUDE_SUFFIX_OS=_linux)
+add_definitions(-DINCLUDE_SUFFIX_CPU=_x86)
+add_definitions(-D__GNUC__=1)
+add_definitions(-DLINUX=1)
+
+file(GLOB_RECURSE SOURCE_FILES &quot;*.cpp&quot; &quot;*.hpp&quot; &quot;*.c&quot; &quot;*.h&quot;)
+add_executable(openjdk_21 ${SOURCE_FILES})
+</code></pre><p>This will be enough to be able to move around the project, to have basic highlighting and allowing you to use features such as &ldquo;go to definition&rdquo;, &ldquo;go to declaration&rdquo;, &ldquo;go to usages&rdquo;, etc.</p>
+<h2 id="references">References<a href="#references" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+<ul>
+<li><a href="https://github.com/openjdk/jdk/blob/master/doc/building.md">jdk/doc/building.md - Building the JDK</a></li>
+</ul>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="https://jorgedfbranco.github.io/tags/java">java</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/jvm">jvm</a></span><span class="tag"><a href="https://jorgedfbranco.github.io/tags/hotspot">hotspot</a></span>
+				</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>551 Words</p>
+
+			</footer>
+		</article>
+		<div class="post-nav thin">
+			<a class="next-post" href="https://jorgedfbranco.github.io/posts/writing-an-expression-evaluator-with-recursive-descent-parsing/">
+				<span class="post-nav-label"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>&nbsp;Newer</span><br><span>Writing an Expression Evaluator with Recursive-Descent Parsing</span>
+			</a>
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2023 <a href="https://jorgedfbranco.github.io">Jorge Branco</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://jorgedfbranco.github.io/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+
+	<script src="https://jorgedfbranco.github.io/js/bundle.min.c048d1b7b0dfdbf1acd4dbd8544a2443fd6da4779e066fe86af64ad37eed258a.js" integrity="sha256-wEjRt7Df2/Gs1NvYVEokQ/1tpHeeBm/oavZK037tJYo=" crossorigin="anonymous"></script>
+	
+
+</body>
+
+</html>

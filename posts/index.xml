@@ -1032,5 +1032,74 @@ Term -&gt; '(' Expr ')'
 ]]></content>
 		</item>
 		
+		<item>
+			<title>Setting up the JVM HotSpot in CLion</title>
+			<link>https://jorgedfbranco.github.io/posts/compiling-the-jvm-hotspot/</link>
+			<pubDate>Tue, 13 Jul 2021 00:00:00 +0000</pubDate>
+			
+			<guid>https://jorgedfbranco.github.io/posts/compiling-the-jvm-hotspot/</guid>
+			<description>Introduction As I&amp;rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&amp;rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.
+Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&amp;rsquo;s wrong.</description>
+			<content type="html"><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>As I&rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.</p>
+<p>Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&rsquo;s wrong. In the worst case scenario, a simple google search will most likely suffice. But as there are at least some things we should be wary about, I&rsquo;m writing this simple tutorial down. In case you get stuck or if you need a more thorough guide, I highly recommend <code>Building the JDK</code> (references).</p>
+<p>Getting basic syntax highlighting going on for CLion will require defining a <code>CMakeLists.txt</code> file. There will still be highlighting errors here and there but navigation should still work reasonably well most of the time.</p>
+<h3 id="1-downloading-a-recent-version-of-the-jdk">1. Downloading a recent version of the JDK</h3>
+<p>To build the JDK you will need to have one already installed in your machine. This will be called this project&rsquo;s <code>bootstrap JDK</code>. It should be as recent as possible: if you want to build <code>JDK X</code>, you will need a <code>JDK X</code> or if that is yet unavailable, <code>JDK X-1</code>.</p>
+<h3 id="2-cloning-the-repository">2. Cloning the repository</h3>
+<p>We&rsquo;ll then clone the repo:</p>
+<p><code>git clone https://github.com/openjdk/jdk.git &amp;&amp; cd jdk</code></p>
+<h3 id="3-installing-all-the-needed-dependencies">3. Installing all the needed dependencies</h3>
+<p>The JDK ships with the <code>configure</code> tool, that can be run with</p>
+<p><code>bash configure --with-boot-jdk=&lt;bootstrap_jdk_path&gt;</code></p>
+<p>allowing you to check what dependencies are currently missing in your system. When executed, it and it will go through the list of HotSpot dependencies and will throw an error the first time it finds one that isn&rsquo;t installed:</p>
+<blockquote>
+<p>configure: error: Could not find fontconfig! You might be able to fix this by running &lsquo;sudo apt-get install libfontconfig1-dev&rsquo;.</p>
+</blockquote>
+<p>It&rsquo;s up to you then to install it with the suggested <code>apt-get</code> snippet and re-run <code>configure</code> until it&rsquo;s finally able to run without errors.</p>
+<h3 id="4-building-the-jdk">4. Building the JDK</h3>
+<p>Now, at last, you can build the JDK:</p>
+<p><code>make images</code></p>
+<ul>
+<li>
+<p>If it complains that it doesn&rsquo;t recognize your operating system, make sure that you are checked out on the master branch and not on an old commit, corresponding to an older JDK. The problem is not the older JDK, but that its commits most likely correspond to a time when the current operating system you&rsquo;re running in at its current version still did not exist. So, either make the build out of a relatively recent commit or follow the tip given here: <a href="https://stackoverflow.com/questions/14285820/os-not-supported-error-while-building-hotspot">https://stackoverflow.com/questions/14285820/os-not-supported-error-while-building-hotspot</a>.</p>
+</li>
+<li>
+<p>It may also complain about having multiple options, and having to choose one. You can do it through the <code>CONF</code> parameter, as shown here: <code>make images CONF=linux-x86_64-server-release</code>.</p>
+</li>
+</ul>
+<h3 id="5-opening-hotspot-with-clion">5. Opening HotSpot with CLion</h3>
+<p>In order to get CLion to index HotSpot, we&rsquo;ll have to create a <code>CMakeLists.txt</code> file on the root of the project:</p>
+<pre><code>cmake_minimum_required(VERSION 3.20)
+project(openjdk_21)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(
+        src/hotspot/cpu/x86
+        src/hotspot/os/linux
+        src/hotspot/os_cpu/linux_x86
+        src/hotspot/share
+        src/hotspot/share/precompiled
+        src/hotspot/share/include
+        src/java.base/unix/native/include
+        src/java.base/share/native/include
+)
+
+add_definitions(-DINCLUDE_SUFFIX_OS=_linux)
+add_definitions(-DINCLUDE_SUFFIX_CPU=_x86)
+add_definitions(-D__GNUC__=1)
+add_definitions(-DLINUX=1)
+
+file(GLOB_RECURSE SOURCE_FILES &quot;*.cpp&quot; &quot;*.hpp&quot; &quot;*.c&quot; &quot;*.h&quot;)
+add_executable(openjdk_21 ${SOURCE_FILES})
+</code></pre><p>This will be enough to be able to move around the project, to have basic highlighting and allowing you to use features such as &ldquo;go to definition&rdquo;, &ldquo;go to declaration&rdquo;, &ldquo;go to usages&rdquo;, etc.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://github.com/openjdk/jdk/blob/master/doc/building.md">jdk/doc/building.md - Building the JDK</a></li>
+</ul>
+]]></content>
+		</item>
+		
 	</channel>
 </rss>

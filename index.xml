@@ -50,5 +50,15 @@ Examples of such calls and their respective return values would be:
  evalExpr(&amp;quot;1 + 2 * 3 / 4 - 1&amp;quot;) = 1. evalExpr(&amp;quot;1 * (2 + 3)&amp;quot;) = 5.  How to go about it? A classical approach to mathematical expression parsing is to use Dijkstra&amp;rsquo;s Shunting-yard algorithm, but in this article we&amp;rsquo;re going to focus on solving it with a recursive-descent parser, as it&amp;rsquo;s a more general approach that also lends itself easier to later expand into a more fully developed language.</description>
     </item>
     
+    <item>
+      <title>Setting up the JVM HotSpot in CLion</title>
+      <link>https://jorgedfbranco.github.io/posts/compiling-the-jvm-hotspot/</link>
+      <pubDate>Tue, 13 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://jorgedfbranco.github.io/posts/compiling-the-jvm-hotspot/</guid>
+      <description>Introduction As I&amp;rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&amp;rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.
+Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&amp;rsquo;s wrong.</description>
+    </item>
+    
   </channel>
 </rss>

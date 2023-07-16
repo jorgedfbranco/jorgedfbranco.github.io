@@ -18,5 +18,15 @@
 Given that nowadays most applications are multi-threaded, allocating an object on the heap can be troublesome &amp;ndash; multiple threads may attempt to do it concurrently and unless some sort of synchronization logic is involved, malign data-races are bound to happen.</description>
     </item>
     
+    <item>
+      <title>Setting up the JVM HotSpot in CLion</title>
+      <link>https://jorgedfbranco.github.io/posts/compiling-the-jvm-hotspot/</link>
+      <pubDate>Tue, 13 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://jorgedfbranco.github.io/posts/compiling-the-jvm-hotspot/</guid>
+      <description>Introduction As I&amp;rsquo;ve already found myself more than once going through the steps of building the JDK on my Ubuntu machine and getting the Hotspot&amp;rsquo;s source loaded into CLion, I ended up deciding to assemble this document to help me or others in the future, would the need eventually arise.
+Building the JDK should be relatively painless, and when problems arise the tools are in generally very specific about what&amp;rsquo;s wrong.</description>
+    </item>
+    
   </channel>
 </rss>

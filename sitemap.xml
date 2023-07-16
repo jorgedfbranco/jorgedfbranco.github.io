@@ -49,5 +49,11 @@
   </url><url>
     <loc>https://jorgedfbranco.github.io/posts/writing-an-expression-evaluator-with-recursive-descent-parsing/</loc>
     <lastmod>2021-08-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://jorgedfbranco.github.io/tags/jvm/</loc>
+    <lastmod>2021-07-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://jorgedfbranco.github.io/posts/compiling-the-jvm-hotspot/</loc>
+    <lastmod>2021-07-13T00:00:00+00:00</lastmod>
   </url>
 </urlset>
